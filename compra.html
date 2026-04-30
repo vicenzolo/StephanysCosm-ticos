@@ -321,9 +321,9 @@
     <header class="header">
       <!-- NAVEGAÇÃO -->
       <nav class="nav-global" style="position: absolute; top: 0; left: 0; right: 0; margin: 0;">
-        <a class="nav-brand" onclick="window.location.href='inicio.html'">Stephany's Cosméticos</a>
+        <a class="nav-brand" onclick="window.location.href='index.html'">Stephany's Cosméticos</a>
         <ul class="nav-links">
-          <li><a href="inicio.html">🏠 Home</a></li>
+          <li><a href="index.html">🏠 Home</a></li>
           <li><a href="compra.html" class="ativo">🛒 Compra</a></li>
           <li><a href="favoritos.html">❤️ Favoritos</a></li>
           <li><a href="filtros.html">🔍 Filtros</a></li>
@@ -371,7 +371,7 @@
 
   <script>
     function voltarParaLoja() {
-      window.location.href = 'inicio.html';
+      window.location.href = 'index.html';
     }
 
     const codigosCupom = {
@@ -736,7 +736,7 @@
       localStorage.removeItem('cuponsAplicados');
       mostrarNotificacao('Compra realizada com sucesso! Obrigado pela preferência.');
       setTimeout(() => {
-        window.location.href = 'inicio.html';
+        window.location.href = 'index.html';
       }, 1200);
     }
 
