@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Favoritos</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* NAVEGAÇÃO GLOBAL */
+    .nav-global {
+      background: linear-gradient(135deg, #fda4af, #fb7185);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-brand {
+      color: white;
+      font-weight: 700;
+      font-size: 1.3rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.ativo {
+      background: rgba(255,255,255,0.2);
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #fef1f5 0%, #fff5f8 100%);
+      min-height: 100vh;
+      padding: 20px;
+      margin: 0;
+      color: #111827;
+    }
+
+    .favoritos-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .favoritos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      border-bottom: 1px solid #f0f0f0;
+      background: white;
+      color: #333;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .favoritos-header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 0;
+      color: #333;
+    }
+
+    .btn-voltar {
+      background: #f3f4f6;
+      color: #374151;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .btn-voltar:hover {
+      background: #e5e7eb;
+      transform: scale(1.1);
+    }
+
+    .favoritos-content {
+      background: white;
+      border-radius: 15px;
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .favoritos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+      justify-items: center;
+    }
+
+    .favorito-card {
+      width: 210px;
+      min-height: 700px;
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 4px 4px 12px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      position: relative;
+      cursor: pointer;
+      margin: 0 auto;
+    }
+
+    .favorito-card:hover {
+      transform: translateY(-10px);
+    }
+
+    .card {
+      width: 210px;
+      min-height: 550px;
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 4px 4px 12px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+    }
+
+    .card img {
+      width: 100%;
+      height: 250px;
+      border-radius: 10px;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: #1f2937;
+      font-weight: 600;
+      line-height: 1.3;
+      min-height: 2.6em;
+    }
+
+    .card > p:nth-of-type(1) {
+      font-size: 1rem;
+      color: #6b7280;
+      margin: 0 0 8px 0;
+      line-height: 1.4;
+      flex-grow: 1;
+    }
+
+    .card > p:nth-of-type(2),
+    .card .preco {
+      font-size: 1.2rem;
+      text-align: center;
+      color: #e11d48;
+      font-weight: 700;
+      margin: 10px 0 4px 0;
+    }
+
+    .btn-favorito {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .btn-favorito:hover {
+      background: #fef2f2;
+      border-color: #fda4af;
+      transform: scale(1.1);
+    }
+
+    .btn-favorito.ativo {
+      background: #fef2f2;
+      border-color: #e11d48;
+      color: #e11d48;
+    }
+
+    /* CATEGORIA TAG */
+    .categoria-tag {
+      display: inline-block;
+      background: #fda4af;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin: 2px 2px 8px 0;
+      font-weight: 600;
+    }
+
+    /* SELO */
+    .selo {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #e11d48;
+      color: white;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .selo:hover {
+      background: #dc2626;
+    }
+
+    /* ESTRELAS */
+    .stars {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      font-size: 1.8em;
+      color: #fbbf24;
+      margin: 2px 0 10px 0;
+    }
+
+    .stars-count {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-left: 8px;
+    }
+
+    /* BOTÃO */
+    .botao {
+      margin-top: auto;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(45deg, #fda4af, #fb7185);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .botao:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(225, 29, 72, 0.3);
+      background: linear-gradient(45deg, #fb7185, #e11d48);
+    }
+
+    .botao-adicionar-detalhe {
+      flex: 1;
+      padding: 8px 8px;
+      font-size: 1rem;
+      min-width: 180px;
+    }
+
+    .botao.brilho {
+      animation: scaleUp 0.6s ease-out;
+    }
+
+    .botao.brilho::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: burst 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      pointer-events: none;
+    }
+
+    @keyframes scaleUp {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes burst {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+      }
+      25% {
+        width: 60px;
+        height: 60px;
+        opacity: 0.8;
+      }
+      50% {
+        width: 120px;
+        height: 120px;
+        opacity: 0.4;
+      }
+      100% {
+        width: 200px;
+        height: 200px;
+        opacity: 0;
+      }
+    }
+
+    /* BOTÃO WISHLIST */
+    .btn-wishlist {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .btn-wishlist:hover {
+      background: #fef2f2;
+      border-color: #fda4af;
+      transform: scale(1.1);
+    }
+
+    .btn-wishlist.adicionado {
+      background: #fef2f2;
+      border-color: #e11d48;
+      color: #e11d48;
+    }
+
+    .detalhes-produto {
+      width: 320px;
+      min-width: 280px;
+      background: white;
+      padding: 24px;
+      border-radius: 24px 0 0 24px;
+      box-shadow: 4px 12px 35px rgba(0, 0, 0, 0.08);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: -360px;
+      overflow: hidden;
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: right 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .detalhes-produto.ativo {
+      right: 0;
+      height: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .detalhes-imagem {
+      width: 100%;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .detalhes-imagem img {
+      width: 100%;
+      height: auto;
+      max-height: 65vh;
+      border-radius: 18px;
+      object-fit: cover;
+    }
+
+    .detalhes-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .detalhe-tag {
+      display: inline-block;
+      background: #fda4af;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .detalhes-info {
+      margin-top: 18px;
+    }
+
+    .detalhes-info hr {
+      border: none;
+      height: 2px;
+      background: #e11d48;
+      opacity: 0.25;
+      margin-bottom: 18px;
+    }
+
+    .detalhes-resumo {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .detalhes-label {
+      display: block;
+      font-size: 0.82rem;
+      color: #777;
+      margin-bottom: 6px;
+    }
+
+    .detalhes-valor {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .detalhes-input-quantidade {
+      width: 60px;
+      padding: 6px 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #111;
+      border: 2px solid #fda4af;
+      border-radius: 8px;
+      background: white;
+      text-align: center;
+    }
+
+    .detalhes-input-quantidade::-webkit-outer-spin-button,
+    .detalhes-input-quantidade::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .detalhes-input-quantidade[type=number] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .detalhes-input-quantidade:focus {
+      outline: none;
+      border-color: #e11d48;
+      box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+    }
+
+    .detalhes-acoes {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .botao-mais,
+    .botao-menos {
+      width: 32px;
+      min-width: 32px;
+      padding: 8px 0;
+      border-radius: 14px;
+      font-size: 1rem;
+    }
+
+    .fechar-detalhes {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: white;
+      border: none;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .notificacao-container {
+      position: fixed;
+      top: 20px;
+      left: 20px !important;
+      right: auto !important;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1100;
+      pointer-events: none;
+      align-items: flex-start;
+    }
+
+    .notificacao {
+      width: 320px;
+      max-width: calc(100vw - 40px);
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+      opacity: 0;
+      transform: translateX(50px);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      pointer-events: auto;
+    }
+
+    .notificacao.ativo {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .notificacao-produto {
+      padding: 15px;
+    }
+
+    .notificacao-produto-conteudo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .notificacao-produto-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .notificacao-produto-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notificacao-produto-nome {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #333;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+
+    .notificacao-produto-mensagem {
+      font-size: 0.9rem;
+      color: #e11d48;
+      font-weight: 500;
+    }
+
+    .notificacao-barra {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #e11d48, #fb7185);
+      border-radius: 0 0 10px 10px;
+      animation: barraProgresso 3s linear forwards;
+    }
+
+    @keyframes barraProgresso {
+      0% { width: 100%; }
+      100% { width: 0%; }
+    }
+
+    .confete {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 50%;
+      z-index: 9999;
+    }
+
+    @keyframes confeteExplodir {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0) rotate(360deg);
+      }
+    }
+
+    .favorito-img {
+      width: 100%;
+      height: 250px;
+      border-radius: 10px;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .favorito-nome,
+    .favorito-preco,
+    .favorito-descricao,
+    .favorito-actions,
+    .btn-adicionar-carrinho,
+    .btn-remover-favorito {
+      display: none;
+    }
+
+    .btn-adicionar-carrinho:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-1px);
+    }
+
+    .btn-remover-favorito {
+      width: 100%;
+      padding: 10px;
+      background: #fee2e2;
+      color: #e11d48;
+      border: 1px solid #fda4af;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .btn-remover-favorito:hover {
+      background: #fecaca;
+      border-color: #e11d48;
+      transform: translateY(-1px);
+    }
+
+    .favoritos-vazio {
+      text-align: center;
+      padding: 100px 20px;
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      min-height: calc(100vh - 200px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+
+    .favoritos-vazio-icone {
+      font-size: 6rem;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .favoritos-vazio-titulo {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 12px;
+    }
+
+    .favoritos-vazio-texto {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    .btn-explorar {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #fb7185, #fda4af);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .btn-explorar:hover {
+      background: linear-gradient(135deg, #e11d48, #fb7185);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(253, 164, 175, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .favoritos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+      }
+
+      .favorito-card {
+        padding: 16px;
+      }
+
+      .favorito-img {
+        height: 150px;
+      }
+    }
+
+    /* ASSISTENTE VIRTUAL / CHATBOT */
+    .btn-assistente {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fa697f, #fda4af);
+      border: none;
+      color: white;
+      font-size: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.4);
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+
+    .btn-assistente:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(225, 29, 72, 0.6);
+    }
+
+    .chatbot-container {
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      width: 350px;
+      height: 500px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
+      display: none;
+      flex-direction: column;
+      z-index: 998;
+      overflow: hidden;
+      animation: abrirChat 0.3s ease-out;
+    }
+
+    .chatbot-container.ativo {
+      display: flex;
+    }
+
+    @keyframes abrirChat {
+      from {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .chatbot-header {
+      background: linear-gradient(135deg, #fa697f, #fda4af);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chatbot-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .btn-fechar-chat {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+    }
+
+    .btn-fechar-chat:hover {
+      transform: rotate(90deg);
+    }
+
+    .chatbot-mensagens {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: #f9fafb;
+    }
+
+    .mensagem {
+      margin-bottom: 15px;
+      display: flex;
+      animation: aparecerMensagem 0.3s ease;
+    }
+
+    @keyframes aparecerMensagem {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .mensagem.usuario {
+      justify-content: flex-end;
+    }
+
+    .mensagem-texto {
+      max-width: 70%;
+      padding: 12px 15px;
+      border-radius: 12px;
+      word-wrap: break-word;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .mensagem.assistente .mensagem-texto {
+      background: #e5e7eb;
+      color: #333;
+      border-radius: 12px 12px 12px 0;
+    }
+
+    .mensagem.usuario .mensagem-texto {
+      background: linear-gradient(135deg, #fa697f, #fda4af);
+      color: white;
+      border-radius: 12px 12px 0 12px;
+    }
+
+    .chatbot-input-area {
+      padding: 15px;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 10px;
+    }
+
+    .chatbot-input {
+      flex: 1;
+      border: 1px solid #d1d5db;
+      border-radius: 25px;
+      padding: 10px 15px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .chatbot-input:focus {
+      border-color: #fa697f;
+      box-shadow: 0 0 0 3px rgba(250, 105, 127, 0.1);
+    }
+
+    .btn-enviar-msg {
+      background: linear-gradient(135deg, #fa697f, #fda4af);
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      transition: 0.3s;
+      flex-shrink: 0;
+    }
+
+    .btn-enviar-msg:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(250, 105, 127, 0.3);
+    }
+
+    .chatbot-mensagens::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chatbot-mensagens::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    .chatbot-mensagens::-webkit-scrollbar-thumb {
+      background: #fa697f;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVEGAÇÃO -->
+  <nav class="nav-global">
+    <a class="nav-brand" onclick="window.location.href='inicio.html'">Stephany's Cosméticos</a>
+    <ul class="nav-links">
+      <li><a href="inicio.html">🏠 Home</a></li>
+      <li><a href="favoritos.html" class="ativo">❤️ Favoritos</a></li>
+      <li><a href="filtros.html">🔍 Filtros</a></li>
+    </ul>
+  </nav>
+
+  <div class="notificacao-container" id="notificacaoContainer"></div>
+
+  <div class="favoritos-container">
+    <div class="favoritos-header">
+      <h1>❤️ Meus Favoritos</h1>
+    </div>
+
+    <div class="favoritos-content">
+      <div id="favoritosGrid" class="favoritos-grid">
+        <!-- Os favoritos serão carregados aqui via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <aside class="detalhes-produto" id="painelDetalhesProduto">
+    <button class="fechar-detalhes" onclick="fecharDetalhesProduto()" aria-label="Fechar detalhes">✖</button>
+    <div class="detalhes-imagem">
+      <img src="" alt="">
+    </div>
+    <h3 class="detalhes-nome"></h3>
+    <div class="detalhes-tags"></div>
+    <p class="detalhes-descricao"></p>
+    <div class="detalhes-info">
+      <hr>
+      <div class="detalhes-resumo">
+        <div>
+          <span class="detalhes-label">Quantidade</span>
+          <input type="number" id="quantidadeProduto" class="detalhes-input-quantidade" min="1" value="1">
+        </div>
+        <div>
+          <span class="detalhes-label">Valor</span>
+          <div class="detalhes-valor" id="valorTotalProduto">R$ 0,00</div>
+        </div>
+      </div>
+      <div class="detalhes-acoes">
+        <button type="button" class="botao botao-menos" onclick="ajustarQuantidade(-1)">-</button>
+        <button type="button" class="botao botao-adicionar-detalhe" onclick="adicionarAoCarrinhoDetalhe(this)">Adicionar ao carrinho</button>
+        <button type="button" class="botao botao-mais" onclick="ajustarQuantidade(1)">+</button>
+      </div>
+    </div>
+  </aside>
+
+  <button class="btn-assistente" onclick="abrirAssistente()" title="Abrir assistente">💬</button>
+
+  <div class="chatbot-container" id="chatbotContainer">
+    <div class="chatbot-header">
+      <h3>Assistente 🤖</h3>
+      <button class="btn-fechar-chat" onclick="fecharAssistente()">✕</button>
+    </div>
+    <div class="chatbot-mensagens" id="chatbotMensagens"></div>
+    <div class="chatbot-input-area">
+      <input 
+        type="text" 
+        class="chatbot-input" 
+        id="chatbotInput" 
+        placeholder="Digite sua mensagem..." 
+        onkeypress="if(event.key === 'Enter') enviarMensagemChat()"
+      >
+      <button class="btn-enviar-msg" onclick="enviarMensagemChat()">➤</button>
+    </div>
+  </div>
+
+  <script>
+    // SISTEMA DE AVALIAÇÕES (igual ao da página principal)
+    function calcularMediaEstrelas(produtoNome) {
+      const avaliacoes = JSON.parse(localStorage.getItem('avaliacoesProdutos')) || {};
+      const produtoAvaliacoes = avaliacoes[produtoNome] || [];
+
+      if (produtoAvaliacoes.length === 0) return { media: 5, total: 0 };
+
+      const soma = produtoAvaliacoes.reduce((acc, av) => acc + av.estrelas, 0);
+      const media = soma / produtoAvaliacoes.length;
+
+      return {
+        media: Math.round(media * 10) / 10,
+        total: produtoAvaliacoes.length
+      };
+    }
+
+    function gerarEstrelasVisuais(media) {
+      const estrelasCheias = Math.floor(media);
+      const meiaEstrela = media % 1 >= 0.5;
+      const estrelasVazias = 5 - estrelasCheias - (meiaEstrela ? 1 : 0);
+
+      let estrelasHTML = '';
+
+      for (let i = 0; i < estrelasCheias; i++) {
+        estrelasHTML += '★';
+      }
+
+      if (meiaEstrela) {
+        estrelasHTML += '☆';
+      }
+
+      for (let i = 0; i < estrelasVazias; i++) {
+        estrelasHTML += '☆';
+      }
+
+      return estrelasHTML;
+    }
+
+    // Carregar produtos do localStorage ou usar dados padrão
+    let produtos = JSON.parse(localStorage.getItem('produtos')) || obterProdutosPadrao();
+    let favoritos = JSON.parse(localStorage.getItem('favoritos')) || [];
+    if (favoritos.includes('Batom')) {
+      favoritos = favoritos.map(item => item === 'Batom' ? 'Royal Batom Attraction' : item);
+      localStorage.setItem('favoritos', JSON.stringify(favoritos));
+    }
+    let detalheQuantidade = 1;
+    let detalhePrecoUnitario = 0;
+
+    // Função para obter produtos padrão (caso não haja no localStorage)
+    function obterProdutosPadrao() {
+      return [
+        {
+          nome: 'Royal Batom Attraction',
+          preco: '40,89',
+          descricao: 'Batom 💄 de alta qualidade, resistente à água 💧 e ao atrito. Proporciona cor intensa ✨, longa duração e lábios impecáveis 💖.',
+          imagem: './images/batom.png',
+          alt: 'Royal Batom Attraction',
+          categorias: ['Rosto', 'Maquiagem'],
+          selo: true,
+          id: 1
+        },
+        {
+          nome: 'natural Sérum Facial revitalizante',
+          preco: '256,90',
+          descricao: 'Sérum anti-oleosidade 💧 e acne ✨, feito com ingredientes naturais 🌿. Revitaliza a pele 💖 e promove uma limpeza profunda e eficaz 🧼.',
+          imagem: './images/Sérum banner venda-1.png',
+          alt: 'natural Sérum Facial revitalizante',
+          categorias: ['Rosto'],
+          selo: false,
+          id: 2
+        },
+        {
+          nome: 'Perfume Luxo Confiance',
+          preco: '587,90',
+          descricao: 'Perfume com fragrância exclusiva 💎 da marca, com durabilidade prolongada e irresistível 😍. Use e sinta-se empoderada 👑.',
+          imagem: './images/perfume banner venda -1.png',
+          alt: 'Perfume Luxo Confiance',
+          categorias: ['Perfumaria'],
+          estrelas: '★★★★★',
+          avaliacoes: 203,
+          selo: true,
+          id: 3
+        },
+        {
+          nome: 'glós Velvet Cover brilhius',
+          preco: '89,90',
+          descricao: 'Gloss de alta qualidade com brilho✨, hidrata e deixa os lábios macios e volumosos. Leve, confortável e perfeito para usar com estilo 💖.',
+          imagem: './images/glos banner venda -1.png',
+          alt: 'glós Velvet Cover brilhius',
+          categorias: ['Rosto', 'Maquiagem'],
+          estrelas: '★★★★★',
+          avaliacoes: 156,
+          selo: true,
+          id: 4
+        },
+        {
+          nome: 'Pó Facial Royal glass fort',
+          preco: '58,90',
+          descricao: 'Pó facial de alta qualidade 💎, com acabamento natural 🌿 e longa duração. Ideal para um look ✨ perfeito e duradouro 💖.',
+          imagem: './images/Pó banner venda -1.png',
+          alt: 'Pó Facial Royal glass fort',
+          categorias: ['Rosto', 'Maquiagem'],
+          estrelas: '★★★★★',
+          avaliacoes: 94,
+          selo: false,
+          id: 5
+        },
+        {
+          nome: 'Sabonete Líquido Elegance',
+          preco: '15,90',
+          descricao: 'Sabonete líquido para limpeza profunda e suave',
+          imagem: './images/Sabonete liquido banner venda -1.png',
+          alt: 'Sabonete Líquido Elegance',
+          categorias: ['Corpo'],
+          estrelas: '★★★★★',
+          avaliacoes: 67,
+          selo: false,
+          id: 6
+        },
+        {
+          nome: 'Body Splash',
+          preco: '34,90',
+          descricao: 'Body splash refrescante com fragrância duradoura',
+          imagem: './images/Body splash banner venda -1.png',
+          alt: 'Body Splash',
+          categorias: ['Corpo'],
+          estrelas: '★★★★★',
+          avaliacoes: 112,
+          selo: false,
+          id: 7
+        },
+        {
+          nome: 'Kit Maquiagem',
+          preco: '149,90',
+          descricao: 'Kit completo de maquiagem profissional',
+          imagem: './images/kit maquiagem slider -1.png',
+          alt: 'Kit Maquiagem',
+          categorias: ['Rosto', 'Maquiagem'],
+          estrelas: '★★★★★',
+          avaliacoes: 178,
+          selo: false,
+          id: 8
+        },
+        {
+          nome: 'Creme Corporal',
+          preco: '39,90',
+          descricao: 'Creme hidratante para pele seca e ressecada',
+          imagem: './images/creme corporal banner venda -1.png',
+          alt: 'Creme Corporal',
+          categorias: ['Corpo'],
+          estrelas: '★★★★★',
+          avaliacoes: 145,
+          selo: false,
+          id: 9
+        },
+        {
+          nome: 'Esfoliante Corporal',
+          preco: '24,90',
+          descricao: 'Esfoliante natural para renovação celular',
+          imagem: './images/Esfoliante corporal banner venda -1.png',
+          alt: 'Esfoliante Corporal',
+          categorias: ['Corpo'],
+          estrelas: '★★★★★',
+          avaliacoes: 83,
+          selo: false,
+          id: 10
+        },
+        {
+          nome: 'Shampoo',
+          preco: '22,90',
+          descricao: 'Shampoo nutritivo para cabelos danificados',
+          imagem: './images/shampoo banner venda -1.png',
+          alt: 'Shampoo',
+          categorias: ['Cabelos'],
+          estrelas: '★★★★★',
+          avaliacoes: 96,
+          selo: false,
+          id: 11
+        },
+        {
+          nome: 'Protetor Solar',
+          preco: '45,90',
+          descricao: 'Protetor solar FPS 50 para proteção máxima',
+          imagem: './images/protetor solar banner venda -1.png',
+          alt: 'Protetor Solar',
+          categorias: ['Corpo'],
+          estrelas: '★★★★★',
+          avaliacoes: 134,
+          selo: false,
+          id: 12
+        }
+      ];
+    }
+
+    // Função para renderizar os favoritos
+    function renderizarFavoritos() {
+      const grid = document.getElementById('favoritosGrid');
+      const favoritosFiltrados = produtos.filter(produto => favoritos.includes(produto.nome));
+
+      if (favoritosFiltrados.length === 0) {
+        grid.innerHTML = `
+          <div class="favoritos-vazio">
+            <div class="favoritos-vazio-icone">🤍</div>
+            <div class="favoritos-vazio-titulo">Nenhum favorito ainda</div>
+            <div class="favoritos-vazio-texto">Adicione produtos aos seus favoritos para vê-los aqui!</div>
+            <button class="btn-explorar" onclick="window.location.href='inicio.html'">Explorar Produtos</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = favoritosFiltrados.map(produto => `
+        <div class="card" data-id="${produto.id}">
+          ${produto.selo ? '<button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>' : ''}
+          <button class="btn-favorito ativo" onclick="toggleFavorito('${produto.nome}', event)" title="Remover dos favoritos">❤️</button>
+          <img src="${produto.imagem}" alt="${produto.alt}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zNWVtIiBmaWxsPSIjOUI5QkE0IiBmb250LXNpemU9IjE0Ij5TZW0gSW1hZ2VtPC90ZXh0Pgo8L3N2Zz4='">
+          <div style="margin-bottom: 8px;">
+            ${produto.categorias.map(cat => `<span class="categoria-tag">${cat}</span>`).join('')}
+          </div>
+          <h3>${produto.nome}</h3>
+          <p>${produto.descricao}</p>
+          <p class="preco">R$ ${produto.preco}</p>
+          <button class="botao" onclick="adicionarAoCarrinho('${produto.nome}', this)">Adicionar ao Carrinho</button>
+        </div>
+      `).join('');
+      reconectarEventosCards();
+    }
+
+    function parsePreco(preco) {
+      if (typeof preco === 'number') return preco;
+      if (typeof preco !== 'string') return Number(preco) || 0;
+      return parseFloat(preco.replace(/[R$\s\.]/g, '').replace(',', '.')) || 0;
+    }
+
+    // Função para adicionar ao carrinho
+    function adicionarAoCarrinho(produtoNome, btn) {
+      let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+      const produto = produtos.find(p => p.nome === produtoNome);
+
+      if (btn) {
+        btn.classList.add('brilho');
+        setTimeout(() => btn.classList.remove('brilho'), 800);
+        criarConfetes(btn);
+      }
+
+      if (produto) {
+        const itemExistente = carrinho.find(item => item.nome === produtoNome);
+        if (itemExistente) {
+          itemExistente.quantidade = (itemExistente.quantidade || 1) + 1;
+        } else {
+          carrinho.push({ ...produto, preco: parsePreco(produto.preco), quantidade: 1 });
+        }
+
+        carrinho = carrinho.map(item => ({ ...item, preco: parsePreco(item.preco) }));
+        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        sessionStorage.setItem('carrinhoTemp', JSON.stringify(carrinho));
+        mostrarNotificacaoProduto(produto.imagem, produto.nome);
+      }
+    }
+
+    // Função para remover dos favoritos
+    function removerDosFavoritos(produtoNome) {
+      favoritos = favoritos.filter(item => item !== produtoNome);
+      localStorage.setItem('favoritos', JSON.stringify(favoritos));
+      renderizarFavoritos();
+      mostrarNotificacao('Removido dos favoritos');
+    }
+
+    function toggleFavorito(produtoNome, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const index = favoritos.indexOf(produtoNome);
+
+      if (index > -1) {
+        favoritos.splice(index, 1);
+        mostrarNotificacao('Removido dos favoritos');
+      } else {
+        favoritos.push(produtoNome);
+        mostrarNotificacao('Adicionado aos favoritos');
+      }
+
+      localStorage.setItem('favoritos', JSON.stringify(favoritos));
+      renderizarFavoritos();
+    }
+
+    function atualizarDetalhesProduto() {
+      const quantidadeEl = document.getElementById('quantidadeProduto');
+      const totalEl = document.getElementById('valorTotalProduto');
+      if (quantidadeEl) quantidadeEl.value = detalheQuantidade;
+      if (totalEl) totalEl.textContent = `R$ ${(detalhePrecoUnitario * detalheQuantidade).toFixed(2).replace('.', ',')}`;
+    }
+
+    function ajustarQuantidade(delta) {
+      detalheQuantidade = Math.max(1, detalheQuantidade + delta);
+      atualizarDetalhesProduto();
+    }
+
+    function adicionarAoCarrinhoDetalhe(btn) {
+      const painel = document.getElementById('painelDetalhesProduto');
+      const nome = painel.querySelector('.detalhes-nome') ? painel.querySelector('.detalhes-nome').textContent : '';
+      const produto = produtos.find(p => p.nome === nome);
+      if (!produto) return;
+
+      let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+      const itemExistente = carrinho.find(item => item.nome === nome);
+      if (itemExistente) {
+        itemExistente.quantidade = (itemExistente.quantidade || 1) + detalheQuantidade;
+      } else {
+        carrinho.push({ ...produto, preco: parsePreco(produto.preco), quantidade: detalheQuantidade });
+      }
+      carrinho = carrinho.map(item => ({ ...item, preco: parsePreco(item.preco) }));
+      localStorage.setItem('carrinho', JSON.stringify(carrinho));
+      sessionStorage.setItem('carrinhoTemp', JSON.stringify(carrinho));
+      mostrarNotificacaoProduto(produto.imagem, produto.nome);
+      fecharDetalhesProduto();
+    }
+
+    function mostrarDetalhesProduto(element) {
+      const card = element.closest('.card') || element;
+      const nome = card.querySelector('h3') ? card.querySelector('h3').textContent : '';
+      const imagem = card.querySelector('img');
+      const descricao = card.querySelector('p') ? card.querySelector('p').textContent : '';
+      const precoTexto = card.querySelector('.preco') ? card.querySelector('.preco').textContent : '';
+      const tags = Array.from(card.querySelectorAll('.categoria-tag')).map(tag => tag.textContent);
+      const painel = document.getElementById('painelDetalhesProduto');
+
+      detalheQuantidade = 1;
+      detalhePrecoUnitario = parseFloat(precoTexto.replace(/[R$\s\.]/g, '').replace(',', '.')) || 0;
+      atualizarDetalhesProduto();
+
+      if (painel) {
+        painel.querySelector('.detalhes-imagem img').src = imagem ? imagem.src : '';
+        painel.querySelector('.detalhes-imagem img').alt = imagem ? imagem.alt : nome;
+        painel.querySelector('.detalhes-nome').textContent = nome;
+        painel.querySelector('.detalhes-descricao').textContent = descricao;
+        painel.querySelector('.detalhes-tags').innerHTML = tags.map(tag => `<span class="detalhe-tag">${tag}</span>`).join('');
+        painel.classList.add('ativo');
+      }
+    }
+
+    function fecharDetalhesProduto() {
+      const painel = document.getElementById('painelDetalhesProduto');
+      if (painel) painel.classList.remove('ativo');
+    }
+
+    function reconectarEventosCards() {
+      const cards = document.querySelectorAll('#favoritosGrid .card');
+      cards.forEach(card => {
+        card.addEventListener('click', function(event) {
+          if (event.target.closest('button')) return;
+          mostrarDetalhesProduto(card);
+        });
+        card.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', event => event.stopPropagation());
+        });
+      });
+    }
+
+    // Função para mostrar notificações
+    function mostrarNotificacao(mensagem) {
+      // Criar elemento de notificação
+      const notificacao = document.createElement('div');
+      notificacao.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 25px;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        z-index: 1000;
+        font-weight: 600;
+        animation: slideIn 0.3s ease;
+      `;
+      notificacao.textContent = mensagem;
+
+      document.body.appendChild(notificacao);
+
+      // Animação de entrada
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Remover após 3 segundos
+      setTimeout(() => {
+        notificacao.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+          document.body.removeChild(notificacao);
+        }, 300);
+      }, 3000);
+
+      // Animação de saída
+      style.textContent += `
+        @keyframes slideOut {
+          from { transform: translateX(0); opacity: 1; }
+          to { transform: translateX(100%); opacity: 0; }
+        }
+      `;
+    }
+
+    function mostrarNotificacaoProduto(imagem, nome, mensagem = 'Adicionado ao carrinho') {
+      const container = document.getElementById('notificacaoContainer');
+      if (!container) {
+        mostrarNotificacao(mensagem);
+        return;
+      }
+
+      const notificacao = document.createElement('div');
+      notificacao.className = 'notificacao notificacao-produto';
+      notificacao.innerHTML = `
+        <div class="notificacao-produto-conteudo">
+          <img src="${imagem}" alt="${nome}" class="notificacao-produto-img">
+          <div class="notificacao-produto-info">
+            <div class="notificacao-produto-nome">${nome}</div>
+            <div class="notificacao-produto-mensagem">${mensagem}</div>
+          </div>
+        </div>
+        <div class="notificacao-barra"></div>
+      `;
+      container.appendChild(notificacao);
+      setTimeout(() => notificacao.classList.add('ativo'), 10);
+
+      setTimeout(() => {
+        notificacao.classList.remove('ativo');
+        setTimeout(() => {
+          if (notificacao.parentNode) {
+            notificacao.parentNode.removeChild(notificacao);
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    function criarConfetes(btn) {
+      const rect = btn.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      const cores = ['#e11d48', '#fb7185', '#fda4af', '#fecdd3', '#f87171'];
+
+      for (let i = 0; i < 15; i++) {
+        const confete = document.createElement('div');
+        confete.classList.add('confete');
+
+        const cor = cores[Math.floor(Math.random() * cores.length)];
+        const tamanho = Math.random() * 8 + 4;
+        const angulo = (Math.PI * 2 * i) / 15 + (Math.random() - 0.5);
+        const velocidade = Math.random() * 200 + 150;
+
+        const tx = Math.cos(angulo) * velocidade;
+        const ty = Math.sin(angulo) * velocidade - 100;
+
+        confete.style.left = x + 'px';
+        confete.style.top = y + 'px';
+        confete.style.width = tamanho + 'px';
+        confete.style.height = tamanho + 'px';
+        confete.style.backgroundColor = cor;
+        confete.style.setProperty('--tx', tx + 'px');
+        confete.style.setProperty('--ty', ty + 'px');
+        confete.style.animation = 'confeteExplodir 1.5s ease-out forwards';
+
+        document.body.appendChild(confete);
+        setTimeout(() => confete.remove(), 1500);
+      }
+    }
+
+    // FUNÇÕES DO ASSISTENTE VIRTUAL
+    function abrirAssistente() {
+      const chatbot = document.getElementById('chatbotContainer');
+      chatbot.classList.add('ativo');
+      document.getElementById('chatbotInput').focus();
+      if (document.getElementById('chatbotMensagens').innerHTML === '') {
+        adicionarMensagem('Olá! 👋 Bem-vinda aos seus Favoritos! Como posso ajudá-la?', 'assistente');
+      }
+    }
+
+    function fecharAssistente() {
+      document.getElementById('chatbotContainer').classList.remove('ativo');
+    }
+
+    function adicionarMensagem(texto, tipo = 'usuario') {
+      const container = document.getElementById('chatbotMensagens');
+      const mensagemDiv = document.createElement('div');
+      mensagemDiv.className = `mensagem ${tipo}`;
+      mensagemDiv.innerHTML = `<div class="mensagem-texto">${texto}</div>`;
+      container.appendChild(mensagemDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function enviarMensagemChat() {
+      const input = document.getElementById('chatbotInput');
+      const mensagem = input.value.trim();
+      if (mensagem === '') return;
+      adicionarMensagem(mensagem, 'usuario');
+      input.value = '';
+      setTimeout(() => {
+        const resposta = gerarRespostaAssistente(mensagem.toLowerCase());
+        adicionarMensagem(resposta, 'assistente');
+      }, 800);
+    }
+
+    function gerarRespostaAssistente(mensagem) {
+      const respostas = {
+        'oi': 'Olá! 👋 Tudo bem? Como posso ajudá-la?',
+        'olá': 'Oi! Bem-vinda! 😊 O que você procura?',
+        'favoritos': 'Você está em seus Favoritos! 💕 Todos os seus produtos preferidos estão aqui!',
+        'produtos': 'Todos os seus produtos favoritos estão listados aqui! 💄',
+        'remover': 'Para remover um favorito, clique no ❤️ novamente!',
+        'carrinho': 'Clique no produto e depois em \"Adicionar ao carrinho\"! 🛒',
+        'ajuda': 'Estou aqui para ajudá-la! Posso responder sobre seus favoritos e produtos! 😊',
+        'obrigada': 'De nada! 💕 Qualquer coisa, estou aqui!',
+        'valeu': 'Fico feliz em ajudar! 🌟',
+      };
+      for (let chave in respostas) {
+        if (mensagem.includes(chave)) return respostas[chave];
+      }
+      const respostasPadrao = [
+        'Entendi! 😊 Pode me dar mais detalhes?',
+        'Quer explorar mais produtos? Visite nossa página inicial! 🌟',
+        'Claro! 💖 Como posso ajudar melhor?',
+      ];
+      return respostasPadrao[Math.floor(Math.random() * respostasPadrao.length)];
+    }
+
+    // Carregar favoritos quando a página carrega
+    document.addEventListener('DOMContentLoaded', renderizarFavoritos);
+  </script>
+</body>
+</html>
