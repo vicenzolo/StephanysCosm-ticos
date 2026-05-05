@@ -1,5 +1,6 @@
 # Arquivos de configuração com chaves sensíveis
 api-config.js
+.env
 
 # Dependências
 node_modules/
