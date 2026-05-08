@@ -10,6 +10,16 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
+// Middleware para desabilitar cache em arquivos HTML
+app.use((req, res, next) => {
+  if (req.url.endsWith('.html') || req.url === '/') {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+  next();
+});
+
 // Servir arquivos estáticos da pasta index.html
 app.use(express.static(__dirname));
 
@@ -28,7 +38,7 @@ app.post('/api/chat', async (req, res) => {
     }
 
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
       {
         contents: [
           {
