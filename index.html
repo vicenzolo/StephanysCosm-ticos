@@ -3,7 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=4.0">
 
 <title>Stephany's Cosméticos</title>
 
@@ -38,7 +38,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 243, 0.95) 55%, rgba(255, 225, 235, 0.95) 100%);
   z-index: 2000;
   transition: opacity 4s ease, visibility 0s ease 4s;
 }
@@ -118,8 +118,8 @@ body {
   margin: 16px auto 0;
   padding: 6px;
   border-radius: 999px;
-  background: rgba(251, 113, 133, 0.12);
-  box-shadow: inset 0 1px 10px rgba(255, 255, 255, 0.55);
+  background: rgba(251, 113, 133, 0.22);
+  box-shadow: inset 0 1px 12px rgba(255, 255, 255, 0.56), inset 0 0 16px rgba(251, 113, 133, 0.18);
 }
 
 .loader-bar-segments {
@@ -132,9 +132,10 @@ body {
   min-width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.85);
-  opacity: 0.25;
+  background: rgba(251, 113, 133, 0.95);
+  opacity: 1;
   animation: loader-bar-segment 1.4s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(251, 113, 133, 0.25);
 }
 
 .loader-bar-segments span:nth-child(1) { animation-delay: 0s; }
@@ -247,7 +248,7 @@ section {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  overflow: hidden;
+  overflow: visible;
   transition: opacity 0.3s ease;
   border: 2px solid rgba(255,255,255,0.18);
   box-shadow: 0 10px 40px rgba(255, 90, 134, 0.25);
@@ -439,6 +440,23 @@ section {
 
 .logo:hover {
   transform: scale(1.12);
+}
+
+
+
+@media (max-width: 960px) {
+  .topo {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .search-container {
+    max-width: 100%;
+    margin: 0;
+  }
+  .topo-acoes {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 .topo-acoes {
@@ -1236,7 +1254,9 @@ section {
   padding: 24px;
   border-radius: 24px 0 0 24px;
   box-shadow: 4px 12px 35px rgba(0, 0, 0, 0.08);
-  position: absolute;
+  position: fixed;
+  top: 0;
+  bottom: 0;
   right: -360px;
   overflow: hidden;
   z-index: 999;
@@ -1249,26 +1269,11 @@ section {
 .detalhes-produto.ativo {
   right: 0;
   height: auto;
-  max-height: 80vh;
   overflow-y: auto;
   overflow-x: hidden;
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-}
-
-.detalhes-produto.ativo::-webkit-scrollbar {
-  width: 8px;
-}
-
-.detalhes-produto.ativo::-webkit-scrollbar-track {
-  background: rgba(255, 235, 244, 0.8);
-  border-radius: 999px;
-}
-
-.detalhes-produto.ativo::-webkit-scrollbar-thumb {
-  background: rgba(255, 111, 163, 0.75);
-  border-radius: 999px;
 }
 
 .detalhes-imagem {
@@ -1502,7 +1507,8 @@ section {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin: 0 auto 16px;
+  display: block;
   transition: background 0.3s ease;
 }
 
@@ -1660,13 +1666,6 @@ section {
   .produtos-conteudo {
     flex-direction: column;
     align-items: center;
-  }
-
-  .detalhes-produto {
-    position: relative;
-    top: auto;
-    width: 100%;
-    max-width: 420px;
   }
 }
 
@@ -4635,6 +4634,7 @@ footer p {
 <header class="topo">
   <div class="menu" onclick="abrirMenuLateral()">☰</div>
   <div class="logo">Stephany's Cosméticos</div>
+
   <div class="topo-acoes">
     <div class="favoritos" onclick="abrirFavoritos()">
       <span class="icone-favoritos" aria-hidden="true">
@@ -4743,14 +4743,14 @@ footer p {
   <div class="produtos-conteudo">
     <div class="grid-produtos">
 
-      <div class="card" data-id="1" data-categorias="rosto maquiagem">
+      <div class="card" data-id="1" data-categorias="rosto, maquiagem">
         <button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>
         <button class="btn-favorito" onclick="toggleFavorito('Royal Batom Attraction', this)" title="Adicionar aos favoritos">🤍</button>
         <img src="./images/batom.png" alt="Royal Batom Attraction">
         <span class="categoria-tag">Rosto</span>
         <span class="categoria-tag">Maquiagem</span>
         <h3>Royal Batom Attraction</h3>
-        <p>✨ Batom 💋 de alta fixação com pigmentação 🎨 intensa e duradoura! Fórmula vegana que resiste 💧 água e suor, garantindo cor impecável 🌟 o dia todo com lábios volumosos 💕.
+        <p>💄 Batom matte com cor intensa ✨ e acabamento impecável 💖 Fórmula resistente de longa duração ⏰ que mantém os lábios lindos o dia todo 🌸 Textura confortável 🎀 efeito aveludado 💋 e pigmentação forte 👑.</p>
         <p>R$ 40,89</p>
         <div class="stars">★★★★★</div>
         <button class="botao" onclick="adicionarCarrinho('Royal Batom Attraction', 40.89, this)">Adicionar ao carrinho</button>
@@ -4762,7 +4762,7 @@ footer p {
         <span class="categoria-tag">Rosto</span>
         <span class="categoria-tag">Gold</span>
         <h3>Sérum Facial revitalizante Gold</h3>
-        <p>🌟 Sérum 💎 de ouro 24K com ácido 🧪 hialurônico para hidratação 💧 profunda! Reduz poros ✨ dilatados e acne, revitalizando 🌿 a pele cansada com toque seco 🔆 e anti-envelhecimento.
+        <p>✨ Sérum facial com toque leve 🌿 e hidratação profunda 💖 Fórmula revitalizante 🌱 que ajuda a controlar a oleosidade 💧 e suavizar imperfeições 🌸 Pele mais macia 🎀 iluminada 💎 e renovada diariamente 👑.</p>
         <p>R$ 256,90</p>
         <div class="stars">★★★★★</div>
         <button class="botao" onclick="adicionarCarrinho('Sérum Facial revitalizante Gold', 256.90, this)">Adicionar ao carrinho</button>
@@ -4771,23 +4771,24 @@ footer p {
       <div class="card" data-id="3" data-categoria="perfumaria">
         <button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>
         <button class="btn-favorito" onclick="toggleFavorito('Perfume Luxo Confiance', this)" title="Adicionar aos favoritos">🤍</button>
-        <img src="./images/Perfume venda -1.png" alt="Perfume Luxo Confiance">
+        <img src="./images/Perfume venda -2.png" alt="Perfume Luxo Confiance">
         <span class="categoria-tag">Perfumaria</span>
         <h3>Perfume Luxo Confiance</h3>
-        <p>👑 Fragrância de luxo com notas florais e amaderadas! 🌹 Fixação de até 12 horas 💫, deixando um aroma irresistível em todos os lugares. Sinta-se empoderada e sofisticada ✨.</p>
-        <p>R$ 587,90</p>
+        <p>🌸 Fragrância marcante com notas florais 🌷 delicadas 💖 Aroma envolvente 👑 e fixação prolongada 💎 que acompanha você o dia inteiro ⏰ Sensação sofisticada 🎀 perfeita para ocasiões especiais ✨</p>
+        <p>R$ 487,90</p>
         <div class="stars">★★★★★</div>
-        <button class="botao" onclick="adicionarCarrinho('Perfume Luxo Confiance', 587.90, this)">Adicionar ao carrinho</button>
+        <button class="botao" onclick="adicionarCarrinho('Perfume Luxo Confiance', 487.90, this)">Adicionar ao carrinho</button>
       </div>
 
       <div class="card" data-id="4" data-categorias="rosto maquiagem">
         <button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>
         <button class="btn-favorito" onclick="toggleFavorito('glós Velvet Cover brilhius', this)" title="Adicionar aos favoritos">🤍</button>
-        <img src="./images/glos banner venda -1.png" alt="glós Velvet Cover brilhius">
+        <img src="./images/glos venda -1.png" alt="glós Velvet Cover brilhius">
+        <text></text>
         <span class="categoria-tag">Rosto</span>
         <span class="categoria-tag">Maquiagem</span>
         <h3>glós Velvet Cover brilhius</h3>
-        <p>💫 Gloss 👄 veludo com efeito 🪞 espelho e volume instantâneo! Textura 💧 macia que hidrata 🌸 profundamente, sem grudar. Brilho ✨ espetacular que dura horas - perfeito 💕 para qualquer ocasião.</p>
+        <p>💫 Gloss 👄 veludo com efeito 🪞 espelho e volume instantâneo! Textura 💧 macia que hidrata 🌸 profundamente, sem grudar. Brilho ✨ espetacular que dura horas, perfeito 💕 para qualquer ocasião.</p>
         <p>R$ 89,90</p>
         <div class="stars">★★★★★</div>
         <button class="botao" onclick="adicionarCarrinho('glós Velvet Cover brilhius', 89.90, this)">Adicionar ao carrinho</button>
@@ -4795,11 +4796,11 @@ footer p {
 
       <div class="card" data-id="5" data-categorias="rosto maquiagem">
         <button class="btn-favorito" onclick="toggleFavorito('Pó Facial Royal glass fort', this)" title="Adicionar aos favoritos">🤍</button>
-        <img src="./images/Pó banner venda -1.png" alt="Pó Facial Royal glass fort">
+        <img src="./images/Pó venda -1.png" alt="Pó Facial Royal glass fort">
         <span class="categoria-tag">Rosto</span>
         <span class="categoria-tag">Maquiagem</span>
         <h3>Pó Facial Royal glass fort</h3>
-        <p>🎨 Pó translúcido com acabamento natural e efeito airbrushed! 💎 Controla o brilho 🌟 sem deixar aspecto empoado. Cobertura leve e duração impecável até 16 horas 💄✨.</p>
+        <p>🌬️ Pó translúcido com acabamento suave e efeito natural 💖 Controla a oleosidade 🌟 sem marcar a pele 💎 Textura leve 🎀 confortável e perfeita para manter a maquiagem 🎨 impecável ⏰.</p>
         <p>R$ 58,90</p>
         <div class="stars">★★★★★</div>
         <button class="botao" onclick="adicionarCarrinho('Pó Facial Royal glass fort', 58.90, this)">Adicionar ao carrinho</button>
@@ -4810,18 +4811,19 @@ footer p {
         <img src="./images/Sabonete liquido venda -1.png" alt="Sabonete Líquido Elegance">
         <span class="categoria-tag">Cuidados Diários</span>
         <h3>Sabonete Líquido Elegance</h3>
-        <p>🫧 Sabonete 🌸 premium com espuma 🧴 luxuosa e fragrância sofisticada! Fórmula 💧 suave que limpa sem ressecar, mantendo 🤍 a pele macia e perfumada 🌺 o dia inteiro.</p>
+        <p>🧼 Sabonete líquido 🧴 com espuma cremosa,  e fragrância delicada 🌸 Limpeza suave 💧 que deixa a pele macia 🎀 hidratada e perfumada 💖 Sensação refrescante 🫧 perfeita para a elegância do dia a dia 👑.</p>
         <p>R$ 79,90</p>
         <div class="stars">★★★★★</div>
         <button class="botao" onclick="adicionarCarrinho('Sabonete Líquido Elegance', 79.90, this)">Adicionar ao carrinho</button>
       </div>
 
-      <div class="card" data-id="7" data-categoria="rosto">
+      <div class="card" data-id="7" data-categoria="rosto, corpo">
         <button class="btn-favorito" onclick="toggleFavorito('Protetor Solar Radiance', this)" title="Adicionar aos favoritos">🤍</button>
         <img src="./images/protetor solar venda -1.png" alt="Protetor Solar Radiance">
         <span class="categoria-tag">Rosto</span>
+        <span class="categoria-tag">Corpo</span>
         <h3>Protetor Solar Radiance</h3>
-        <p>☀️ Protetor solar com FPS 50+ e tecnologia anti-envelhecimento! 🛡️ Fórmula leve que não deixa branco, com proteção contra raios UVA/UVB 🌞 e mantém a pele radiante ✨💙.</p>
+        <p>☀️ Protetor solar FPS 50+ ✨ com textura leve e toque sequinho 💖 Proteção UVA/UVB 🛡️ que ajuda a cuidar da pele diariamente 🌸 Acabamento natural 💧 confortável e ideal para todos os momentos 👑.</p>
         <p>R$ 97,90</p>
         <div class="stars">★★★★★</div>
         <button class="botao" onclick="adicionarCarrinho('Protetor Solar Radiance', 97.90, this)">Adicionar ao carrinho</button>
@@ -4830,10 +4832,10 @@ footer p {
       <div class="card" data-id="8" data-categoria="perfumaria">
         <button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>
         <button class="btn-favorito" onclick="toggleFavorito('Body Splash refreshment', this)" title="Adicionar aos favoritos">🤍</button>
-        <img src="./images/Body splash banner venda -1.png" alt="Body Splash refreshment">
+        <img src="./images/Body splash venda -1.png" alt="Body Splash refreshment">
         <span class="categoria-tag">Perfumaria</span>
         <h3>Body Splash refreshment</h3>
-        <p>🍓 Body splash refrescante com fragrância frutal irresistível! 🌬️ Fórmula leve que seca rapidinho sem deixar resíduo. Hidratação leve 💧 com aroma que dura o dia todo 🎀✨.</p>
+        <p>🍓 Body splash com fragrância leve e refrescante 🌸 Aroma delicado 💖 que perfuma suavemente a pele 🎀 Sensação refrescante 💧 secagem rápida 🌟 e toque confortável para o dia todo 👑.</p>
         <p>R$ 234,00</p>
         <div class="stars">★★★★★</div>
         <button class="botao" onclick="adicionarCarrinho('Body Splash refreshment', 234.00, this)">Adicionar ao carrinho</button>
@@ -4842,7 +4844,7 @@ footer p {
       <div class="card" data-id="9" data-categoria="cuidados-diarios">
         <button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>
         <button class="btn-favorito" onclick="toggleFavorito('Esfoliante Corporal Esfólyus', this)" title="Adicionar aos favoritos">🤍</button>
-        <img src="./images/Esfoliante corporal banner venda -1.png" alt="Esfoliante Corporal Esfólyus">
+        <img src="./images/Esfoliante venda -1.png" alt="Esfoliante Corporal Esfólyus">
         <span class="categoria-tag">Cremes</span>
         <h3>Esfoliante Corporal Esfólyus</h3>
         <p>🧖 Esfoliante 🌿 corporal com grânulos naturais 🧴 e óleos essenciais! Remove ✨ células mortas suavemente, deixando 💧 a pele macia e radiante 🌸. Ideal pós-depilação sem irritar 💕.</p>
@@ -4858,7 +4860,7 @@ footer p {
         <span class="categoria-tag">Cremes</span>
         <span class="categoria-tag">Cabelos</span>
         <h3>Shampoo Revitalizante vival</h3>
-        <p>✨ Shampoo 🧴 revitalizante com proteínas 💪 e óleos naturais! Fortalece 🌿 os fios desde a raiz, aumenta 🌟 volume e deixa 🪶 o cabelo sedoso e brilhante 💕.</p>
+        <p>🧴 Shampoo revitalizante ✨ com fórmula nutritiva e toque suave 💖 Ajuda a fortalecer os fios 🌿 enquanto proporciona brilho intenso 🌟 Espuma cremosa 🎀 sensação refrescante 💧 e cabelos mais macios 🪶.</p>
         <p>R$ 188,90</p>
         <div class="stars">★★★★★</div>
         <button class="botao" onclick="adicionarCarrinho('Shampoo Revitalizante vival', 188.90, this)">Adicionar ao carrinho</button>
@@ -4867,10 +4869,10 @@ footer p {
       <div class="card" data-id="11" data-categoria="cuidados-diarios">
         <button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>
         <button class="btn-favorito" onclick="toggleFavorito('Creme Corporal Hidratante', this)" title="Adicionar aos favoritos">🤍</button>
-        <img src="./images/creme corporal banner venda -1.png" alt="Creme Corporal Hidratante">
+        <img src="./images/creme corporal venda -1.png" alt="Creme Corporal Hidratante">
         <span class="categoria-tag">Cremes</span>
         <h3>Creme Corporal Hidratante</h3>
-        <p>🫧 Creme 🧴 corporal com manteiga 🥑 de karité e vitamina E! Hidratação 💧 profunda que suaviza até peles 🌿 ressecadas, deixando macia ✨ e perfumada por 24h 💕.</p>
+        <p>🧴 Creme corporal ✨ com manteiga de Karité 🥑 e absorção rápida ✨ Nutrição intensa 🌿 que ajuda a restaurar o brilho natural da pele 💧 Toque sedoso 🌸 perfume envolvente 🎀 e sensação de cuidado prolongado 👑.</p>
         <p>R$ 101,90</p>
         <div class="stars">★★★★★</div>
         <button class="botao" onclick="adicionarCarrinho('Creme Corporal Hidratante', 101.90, this)">Adicionar ao carrinho</button>
@@ -4879,22 +4881,22 @@ footer p {
       <div class="card" data-id="12" data-categoria="perfumaria">
         <button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>
         <button class="btn-favorito" onclick="toggleFavorito('Perfume Floral Premium', this)" title="Adicionar aos favoritos">🤍</button>
-        <img src="./images/perfume venda -2.png" alt="Perfume Floral Premium">
+        <img src="./images/perfume venda -1.png" alt="Perfume Floral Premium">
         <span class="categoria-tag">Perfumaria</span>
         <h3>Perfume Floral Premium</h3>
-        <p>👑 Perfume floral premium com concentração alta de fragrância! 🌹 Notas sofisticadas que evoluem ao longo do dia 🌟 com fixação excepcional. Deixa uma trilha irresistível ✨💎.
-        <p>R$ 718,99</p>
+        <p>✨ Perfume floral 🌹 com essência marcante e toque refinado 👑 Notas delicadas de jasmim 🌸 e rosa envolvem a pele com um aroma elegante 💖 Fixação prolongada ⏰ e presença irresistível em cada borrifada 💎</p>
+        <p>R$ 218,99</p>
         <div class="stars">★★★★★</div>
-        <button class="botao" onclick="adicionarCarrinho('Perfume Floral Premium', 718.99, this)">Adicionar ao carrinho</button>
+        <button class="botao" onclick="adicionarCarrinho('Perfume Floral Premium', 218.99, this)">Adicionar ao carrinho</button>
       </div>
 
-<div class="card" data-id="13" data-categoria="Maquiagem">
+      <div class="card" data-id="13" data-categoria="Maquiagem">
         <button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>
         <button class="btn-favorito" onclick="toggleFavorito('Precision Eyeliner Black', this)" title="Adicionar aos favoritos">🤍</button>
-        <img src="./images/Banner Lapíz -1.png" alt="Precision Eyeliner Black">
+        <img src="./images/Lapíz venda -1.png" alt="Precision Eyeliner Black">
         <span class="categoria-tag">Maquiagem</span>
         <h3>Precision Eyeliner Black</h3>
-        <p>✏️ Delineador 👁️ com ponta ultra-precisa 🎯 e tinta preta intensa! Prova ⏰ d'água que dura 24h sem 🚫 borrar ou desbotar. Traço 🖤 impecável para olhar marcante ✨.
+        <p>👁️ Delineador com ponta precisa ✏️ e pigmentação intensa 🖤 Desliza facilmente 🎯 criando traços definidos e elegantes 💖 Fórmula resistente 💧 de longa duração ⏰ para um olhar marcante o dia inteiro 👑.</p>
         <p>R$ 118,99</p>
         <div class="stars">★★★★★</div>
         <button class="botao" onclick="adicionarCarrinho('Precision Eyeliner Black', 118.99, this)">Adicionar ao carrinho</button>
@@ -4902,11 +4904,11 @@ footer p {
 
       <div class="card" data-id="14" data-categoria="Cabelos">
         <button class="btn-favorito" onclick="toggleFavorito('Hair Oil Nutritive Forts Gold', this)" title="Adicionar aos favoritos">🤍</button>
-        <img src="./images/Óleo banner venda -1.png" alt="Hair Oil Nutritive Forts Gold">
+        <img src="./images/Óleo venda -1.png" alt="Hair Oil Nutritive Forts Gold">
         <span class="categoria-tag">Cabelos</span>
         <span class="categoria-tag">Gold</span>
         <h3>Hair Oil Nutritive Forts Gold</h3>
-        <p>✨ Óleo 💛 capilar 24K que sela 🔐 as cutículas e potencializa 🌟 o brilho! Reduz frizz 💨 instantaneamente e protege 🔥 do calor até 230°C. Fios sedosos 👑 e macios o dia todo.
+        <p>✨ Óleo 💛 capilar 24K com partículas de Ouro que sela 🔐 as cutículas e potencializa 🌟 o brilho! Reduz frizz 💨 instantaneamente e protege 🔥 do calor até 230°C. Fios sedosos 👑 e macios o dia todo.⏰.</p>
         <p>R$ 434,99</p>
         <div class="stars">★★★★★</div>
         <button class="botao" onclick="adicionarCarrinho('Hair Oil Nutritive Forts Gold', 434.99, this)">Adicionar ao carrinho</button>
@@ -4914,10 +4916,10 @@ footer p {
 
       <div class="card" data-id="15" data-categoria="Cabelos">
         <button class="btn-favorito" onclick="toggleFavorito('Conditioner Hidra Silk Dominiun', this)" title="Adicionar aos favoritos">🤍</button>
-        <img src="./images/Condicionador banner venda -1.png" alt="Conditioner Hidra Silk Dominiun">
+        <img src="./images/Condicionador venda -1.png" alt="Conditioner Hidra Silk Dominiun">
         <span class="categoria-tag">Cabelos</span>
         <h3>Conditioner Hidra Silk Dominiun</h3>
-        <p>💆‍♀️ Condicionador 🧴 3 em 1 com seda 🪶 natural e colágeno! Hidratação 💧 intensa que suaviza e ✨ restaura o brilho dos fios 🌟. Textura leve que não 🪶 pesa e deixa cabelo macio 💕.
+        <p>💆‍♀️ Condicionador 🧴 com hidratação intensa ✨ e toque sedoso nos fios 💖 Fórmula leve 🌬️ que deixa o cabelo mais macio 🪶 alinhado 🌟 e com brilho radiante como uma Hidra🐉.</p>
         <p>R$ 239,99</p>
         <div class="stars">★★★★★</div>
         <button class="botao" onclick="adicionarCarrinho('Conditioner Hidra Silk Dominiun', 239.99, this)">Adicionar ao carrinho</button>
@@ -4929,50 +4931,76 @@ footer p {
         <span class="categoria-tag">Cabelos</span>
         <span class="categoria-tag">Dimond</span>
         <h3>Hair Mask Repair Dimond</h3>
-        <p>👑 Máscara 💎 capilar de diamante com 🧴 nutrição ultra-intensiva! Repara 💪 danos profundos, restaura 🌟 brilho perdido e fortalece ✨ os fios. Cabelo radiante e sedoso 🪶 após 1 uso 💕.
-        <p>R$ 339,99</p>
+        <p>✨ Máscara premium Dimond 🧴 com nutrição intensa e toque restaurador 💖 Ajuda a fortalecer os fios 💪 devolvendo brilho radiante 🌟 e deixando o cabelo sedoso 👑 saudável e cheio de vida ✨</p>
+        <p>R$ 682,11</p>
         <div class="stars">★★★★★</div>
-        <button class="botao" onclick="adicionarCarrinho('Hair Mask Repair Dimond', 339.99, this)">Adicionar ao carrinho</button>
+        <button class="botao" onclick="adicionarCarrinho('Hair Mask Repair Dimond', 682.11, this)">Adicionar ao carrinho</button>
+      </div>
+
+      <div class="card" data-id="17" data-categoria="perfumaria">
+        <button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>
+        <button class="btn-favorito" onclick="toggleFavorito('Glamour Eau de Perfum', this)" title="Adicionar aos favoritos">🤍</button>
+        <img src="./images/perfume venda -3.png" alt="Glamour Eau de Perfum">
+        <span class="categoria-tag">Perfumaria</span>
+        <h3>Glamour Eau de Perfum</h3>
+        <p>👑 Fragrância sofisticada e envolvente com alta fixação! 🌸✨ Notas florais delicadas que revelam elegância e glamour ao longo do dia 💖 deixando uma presença marcante e irresistível 💎.</p>
+        <p>R$ 1522,99</p>
+        <div class="stars">★★★★★</div>
+        <button class="botao" onclick="adicionarCarrinho('Glamour Eau de Perfum', 1522.99, this)">Adicionar ao carrinho</button>
+      </div>
+
+      <div class="card" data-id="18" data-categorias="rosto maquiagem">
+         <button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>
+        <button class="btn-favorito" onclick="toggleFavorito('Paleta de Cor Rosé Dream', this)" title="Adicionar aos favoritos">🤍</button>
+        <img src="./images/Paleta de cor venda -1.png" alt="Paleta de Cor Rosé Dream">
+        <span class="categoria-tag">Rosto</span>
+        <span class="categoria-tag">Maquiagem</span>
+        <h3>Paleta de Cor Rosé Dream</h3>
+        <p>👑 paleta perfeita para criar makes sofisticadas e iluminadas 💖 Com tons rosados 🌸 elegantes e partículas de brilho intenso ✨ sua textura macia entrega um acabamento aveludado 🎀 na aplicação 💕.</p>
+        <p>R$ 875,43</p>
+        <div class="stars">★★★★★</div>
+        <button class="botao" onclick="adicionarCarrinho('Paleta de Cor Rosé Dream', 875.43, this)">Adicionar ao carrinho</button>
       </div>
 
     </div>
 
-    <aside class="detalhes-produto" id="painelDetalhesProduto">
-      <button class="fechar-detalhes" onclick="fecharDetalhesProduto()" aria-label="Fechar detalhes">✖</button>
-      <div class="detalhes-imagem">
-        <img src="" alt="">
-      </div>
-      <h3 class="detalhes-nome"></h3>
-      <div class="detalhes-tags"></div>
-      <p class="detalhes-descricao"></p>
-      <div class="detalhes-info">
-        <hr>
-        <div class="detalhes-resumo">
-          <div>
-            <span class="detalhes-label">Quantidade</span>
-            <input type="number" id="quantidadeProduto" class="detalhes-input-quantidade" min="0" value="0">
-          </div>
-          <div>
-            <span class="detalhes-label">Valor</span>
-            <div class="detalhes-valor" id="valorTotalProduto">R$ 0,00</div>
-          </div>
-        </div>
-        <div class="detalhes-acoes">
-          <button type="button" class="botao botao-menos" onclick="ajustarQuantidade(-1)">-</button>
-          <button type="button" class="botao botao-adicionar-detalhe" onclick="adicionarCarrinhoDetalhe(this)">Adicionar ao carrinho</button>
-          <button type="button" class="botao botao-mais" onclick="ajustarQuantidade(1)">+</button>
-        </div>
-        <div class="detalhes-avaliacoes">
-          <h4>Avaliações</h4>
-          <button type="button" class="botao-adicionar-avaliacao" onclick="abrirModalAvaliacao()">Adicionar Avaliação</button>
-          <div id="listaAvaliacoes">
-            <!-- Avaliações serão carregadas aqui -->
-          </div>
-        </div>
-      </div>
-    </aside>
   </div>
 </section>
+
+<aside class="detalhes-produto" id="painelDetalhesProduto">
+  <button class="fechar-detalhes" onclick="fecharDetalhesProduto()" aria-label="Fechar detalhes">✖</button>
+  <div class="detalhes-imagem">
+    <img src="" alt="">
+  </div>
+  <h3 class="detalhes-nome"></h3>
+  <div class="detalhes-tags"></div>
+  <p class="detalhes-descricao"></p>
+  <div class="detalhes-info">
+    <hr>
+    <div class="detalhes-resumo">
+      <div>
+        <span class="detalhes-label">Quantidade</span>
+        <input type="number" id="quantidadeProduto" class="detalhes-input-quantidade" min="0" value="0">
+      </div>
+      <div>
+        <span class="detalhes-label">Valor</span>
+        <div class="detalhes-valor" id="valorTotalProduto">R$ 0,00</div>
+      </div>
+    </div>
+    <div class="detalhes-acoes">
+      <button type="button" class="botao botao-menos" onclick="ajustarQuantidade(-1)">-</button>
+      <button type="button" class="botao botao-adicionar-detalhe" onclick="adicionarCarrinhoDetalhe(this)">Adicionar ao carrinho</button>
+      <button type="button" class="botao botao-mais" onclick="ajustarQuantidade(1)">+</button>
+    </div>
+    <div class="detalhes-avaliacoes">
+      <h4>Avaliações</h4>
+      <button type="button" class="botao-adicionar-avaliacao" onclick="abrirModalAvaliacao()">Adicionar Avaliação</button>
+      <div id="listaAvaliacoes">
+        <!-- Avaliações serão carregadas aqui -->
+      </div>
+    </div>
+  </div>
+</aside>
 
 <!-- MODAL DE AVALIAÇÃO -->
 <div id="modalAvaliacao" class="modal-overlay" style="display:none;">
@@ -8145,6 +8173,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   reconectarEventosCards();
 
+
+
   const botoesSaberMais = document.querySelectorAll('.botao-saber-mais');
   botoesSaberMais.forEach(btn => {
     btn.type = 'button';
@@ -8192,6 +8222,11 @@ function adicionarCarrinhoDetalhe(btn) {
   fecharDetalhesProduto();
 }
 
+function fecharDetalhesProduto() {
+  const painel = document.getElementById('painelDetalhesProduto');
+  if (painel) painel.classList.remove('ativo');
+}
+
 let produtoAtualId = null;
 
 function reconectarEventosCards() {
@@ -8226,20 +8261,6 @@ function mostrarDetalhesProduto(element) {
   detalhePrecoUnitario = parseFloat(precoTexto.replace(/[R$\s\.]/g, '').replace(',', '.')) || 0;
   atualizarDetalhesProduto();
 
-  // Posicionar o painel ao lado do card
-  function atualizarPosicao() {
-    const rect = card.getBoundingClientRect();
-    painel.style.top = (rect.top + window.scrollY) + 'px';
-  }
-  atualizarPosicao();
-
-  // Atualizar posição no scroll
-  const scrollHandler = () => atualizarPosicao();
-  window.addEventListener('scroll', scrollHandler);
-
-  // Salvar o handler para remover depois
-  painel._scrollHandler = scrollHandler;
-
   painel.querySelector('.detalhes-imagem img').src = imagem ? imagem.src : '';
   painel.querySelector('.detalhes-imagem img').alt = imagem ? imagem.alt : nome;
   painel.querySelector('.detalhes-nome').textContent = nome;
@@ -8250,18 +8271,6 @@ function mostrarDetalhesProduto(element) {
   if (botao) {
     botao.classList.add('brilho');
     setTimeout(() => botao.classList.remove('brilho'), 600);
-  }
-}
-
-function fecharDetalhesProduto() {
-  const painel = document.getElementById('painelDetalhesProduto');
-  if (painel) {
-    painel.classList.remove('ativo');
-    // Remover o event listener
-    if (painel._scrollHandler) {
-      window.removeEventListener('scroll', painel._scrollHandler);
-      delete painel._scrollHandler;
-    }
   }
 }
 
@@ -8290,8 +8299,9 @@ function filtrarPorCategoria(categoria) {
   if (promoSection) promoSection.style.display = 'none';
   if (beneficiosSection) beneficiosSection.style.display = 'none';
   if (btnVoltar) btnVoltar.style.display = 'block';
-  reconectarEventosCards();
 }
+
+
 
 // FUNÇÃO PARA ABRIR MODAL DE FILTRO
 function fecharFiltroModal() {
@@ -8452,7 +8462,6 @@ function irParaMaisVendidos() {
   // Rolar para a seção
   const secao = document.getElementById('secaoProdutos');
   secao.scrollIntoView({ behavior: 'smooth' });
-  reconectarEventosCards();
 }
 
 // FUNÇÃO PARA VOLTAR AOS PRODUTOS
@@ -8482,7 +8491,6 @@ function voltarProdutos() {
     // Rolar para o topo após as seções serem mostradas
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      reconectarEventosCards();
     }, 50);
   }, 100);
 }
@@ -8757,6 +8765,21 @@ function inscreverNewsletter(event) {
   // Aqui você pode adicionar código para enviar o email para seu backend
   console.log('Novo inscrito:', email);
 }
+
+// DEBUG: Verificar estado do card 17
+setTimeout(() => {
+  const card17 = document.getElementById('debug-card-17');
+  if (card17) {
+    console.log('Card 17 encontrado:', card17);
+    console.log('Display style:', getComputedStyle(card17).display);
+    console.log('Visibility:', getComputedStyle(card17).visibility);
+    console.log('Opacity:', getComputedStyle(card17).opacity);
+    console.log('Position:', getComputedStyle(card17).position);
+    console.log('Bounding rect:', card17.getBoundingClientRect());
+  } else {
+    console.log('Card 17 NÃO encontrado!');
+  }
+}, 1000);
 
 </script>
 

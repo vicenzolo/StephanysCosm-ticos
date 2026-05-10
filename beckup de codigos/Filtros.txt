@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resultados do Filtro</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* SPINNER DE CARREGAMENTO */
+    .page-load-spinner {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(254, 241, 245, 0.95);
+      z-index: 2000;
+      transition: opacity 4s ease, visibility 0s ease 4s;
+    }
+
+    .page-load-spinner.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-brand {
+      text-align: center;
+      position: relative;
+    }
+
+    .loader-logo {
+      width: 140px;
+      max-width: 100%;
+      animation: pulse-logo 1.4s ease-in-out infinite;
+      filter: drop-shadow(0 12px 30px rgba(199, 34, 85, 0.16));
+      position: relative;
+      z-index: 2;
+    }
+
+    .loader-spinner {
+      position: absolute;
+      top: 41%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 240px;
+      height: 240px;
+      z-index: 1;
+    }
+
+    .loader-line {
+      position: absolute;
+      top: 38%;
+      left: 50%;
+      width: 180px;
+      height: 180px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border-top: 10px solid rgba(255,255,255,0.95);
+      border-right: 10px solid rgba(251,113,133,0.95);
+      border-bottom: 10px solid transparent;
+      border-left: 10px solid transparent;
+      box-shadow: 0 0 18px rgba(251,113,133,0.35), inset 0 0 12px rgba(255,255,255,0.55);
+      animation: spinner 1.2s linear infinite;
+    }
+
+    .loader-line::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: transparent;
+      opacity: 0.4;
+      filter: blur(6px);
+    }
+
+    @keyframes spinner {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes pulse-logo {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .loader-text {
+      margin-top: 18px;
+      color: #9f2f5e;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+    }
+
+    .loader-bar {
+      width: 260px;
+      max-width: 90vw;
+      margin: 16px auto 0;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(251, 113, 133, 0.22);
+      box-shadow: inset 0 1px 12px rgba(255, 255, 255, 0.56), inset 0 0 16px rgba(251, 113, 133, 0.18);
+    }
+
+    .loader-bar-segments {
+      display: flex;
+      gap: 6px;
+    }
+
+    .loader-bar-segments span {
+      flex: 1;
+      min-width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(251, 113, 133, 0.95);
+      opacity: 1;
+      animation: loader-bar-segment 1.4s ease-in-out infinite;
+      box-shadow: 0 0 8px rgba(251, 113, 133, 0.25);
+    }
+
+    .loader-bar-segments span:nth-child(1) { animation-delay: 0s; }
+    .loader-bar-segments span:nth-child(2) { animation-delay: 0.1s; }
+    .loader-bar-segments span:nth-child(3) { animation-delay: 0.2s; }
+    .loader-bar-segments span:nth-child(4) { animation-delay: 0.3s; }
+    .loader-bar-segments span:nth-child(5) { animation-delay: 0.4s; }
+    .loader-bar-segments span:nth-child(6) { animation-delay: 0.5s; }
+    .loader-bar-segments span:nth-child(7) { animation-delay: 0.6s; }
+    .loader-bar-segments span:nth-child(8) { animation-delay: 0.7s; }
+    .loader-bar-segments span:nth-child(9) { animation-delay: 0.8s; }
+    .loader-bar-segments span:nth-child(10) { animation-delay: 0.9s; }
+
+    @keyframes loader-bar-segment {
+      0%, 100% { opacity: 0.25; }
+      50% { opacity: 1; }
+    }
+
+    /* NAVEGAÇÃO GLOBAL */
+    .nav-global {
+      background: linear-gradient(135deg, #fda4af, #fb7185);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-brand {
+      color: white;
+      font-weight: 700;
+      font-size: 1.3rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.ativo {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .filtros-search-row {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin: 20px auto;
+      max-width: 1200px;
+      padding: 0 20px;
+    }
+
+    .filtros-search-row .search-box {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .search-suggestions {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+      overflow: hidden;
+      display: none;
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      z-index: 10;
+    }
+
+    .suggestion-item {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      padding: 14px 18px;
+      cursor: pointer;
+      color: #111827;
+      font-size: 0.95rem;
+      transition: background 0.15s ease;
+    }
+
+    .suggestion-item:hover {
+      background: #fdf2f8;
+    }
+
+    .suggestion-item:not(:last-child) {
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    
+
+    .filtros-search-row .search-box input {
+      width: 100%;
+      padding: 12px 120px 12px 16px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      outline: none;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .filtros-search-row .search-box input:focus {
+      box-shadow: 0 0 10px rgba(253, 164, 175, 0.4);
+    }
+
+    .filtros-search-row .btn-busca {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      min-width: 70px;
+      height: 39px;
+      padding: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fda4af;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      color: white;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .filtros-search-row .btn-busca:hover {
+      background: #fb7185;
+    }
+
+    .filtro-preco {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-end;
+      justify-content: center;
+      background: white;
+      border-radius: 20px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      margin: 0 auto 20px auto;
+      max-width: 1200px;
+    }
+
+    .campo-filtro {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 180px;
+      flex: 1 1 200px;
+      font-size: 0.95rem;
+      color: #374151;
+    }
+
+    .campo-filtro label {
+      font-weight: 600;
+    }
+
+    .campo-filtro input,
+    .campo-filtro select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      outline: none;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .campo-filtro input:focus,
+    .campo-filtro select:focus {
+      border-color: #fda4af;
+      box-shadow: 0 0 0 3px rgba(253, 164, 175, 0.18);
+    }
+
+    .btn-filtrar-preco,
+    .btn-limpar-filtro {
+      padding: 12px 20px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-filtrar-preco {
+      background: linear-gradient(135deg, #fda4af, #fb7185);
+      color: white;
+    }
+
+    .btn-filtrar-preco:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(253, 164, 175, 0.35);
+    }
+
+    .btn-limpar-filtro {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .btn-limpar-filtro:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #fef1f5 0%, #fff5f8 100%);
+      min-height: 100vh;
+      padding: 20px;
+      margin: 0;
+      color: #111827;
+    }
+
+    .filtros-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filtros-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      border-bottom: 1px solid #f0f0f0;
+      background: white;
+      color: #333;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .filtros-header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 0;
+      color: #333;
+    }
+
+    .btn-voltar {
+      background: #f3f4f6;
+      color: #374151;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-voltar:hover {
+      background: #e5e7eb;
+      transform: scale(1.1);
+    }
+
+    .filtros-body {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .filtros-sidebar {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 4px 4px 12px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 110px;
+      max-height: calc(100vh - 140px);
+      overflow: auto;
+    }
+
+    .filtros-sidebar h2 {
+      font-size: 1.2rem;
+      margin-bottom: 18px;
+      color: #111827;
+    }
+
+    .filtro-bloco {
+      margin-bottom: 24px;
+    }
+
+    .filtro-bloco h3 {
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      color: #374151;
+    }
+
+    .filtro-bloco label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      color: #4b5563;
+      font-size: 0.95rem;
+    }
+
+    .filtro-bloco input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      appearance: none;
+      border: 2px solid #fda4af;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      position: relative;
+    }
+
+    .filtro-bloco input[type="checkbox"]:checked {
+      background: #fda4af;
+      border-color: #f43f5e;
+    }
+
+    .filtro-bloco input[type="checkbox"]:checked::after {
+      content: '✔';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffffff;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .filtro-bloco label span {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .btn-aplicar-filtros {
+      width: 100%;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fda4af, #fb7185);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-aplicar-filtros:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(253,164,175,0.2);
+    }
+
+    .filtros-content {
+      background: white;
+      border-radius: 15px;
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .filtros-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+      justify-items: center;
+    }
+
+    .card {
+      width: 210px;
+      min-height: 550px;
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 4px 4px 12px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+    }
+
+    .card img {
+      width: 100%;
+      height: 250px;
+      border-radius: 10px;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .categoria-tag {
+      display: inline-block;
+      background: #fda4af;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin: 2px 2px 8px 0;
+      font-weight: 600;
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: #1f2937;
+      font-weight: 600;
+      line-height: 1.3;
+      min-height: 2.6em;
+    }
+
+    .card > p:nth-of-type(1) {
+      font-size: 1rem;
+      color: #6b7280;
+      margin: 0 0 8px 0;
+      line-height: 1.4;
+      flex-grow: 1;
+    }
+
+    .card > p:nth-of-type(2) {
+      font-size: 1rem;
+      color: #e11d48;
+      font-weight: 700;
+      margin: 8px 0 10px 0;
+    }
+
+    .botao {
+      margin-top: auto;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(45deg, #fda4af, #fb7185);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .botao:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(225, 29, 72, 0.3);
+      background: linear-gradient(45deg, #fb7185, #e11d48);
+    }
+
+    .botao-adicionar-detalhe {
+      flex: 1;
+      padding: 8px 8px;
+      font-size: 1rem;
+      min-width: 180px;
+    }
+
+    .botao.brilho {
+      animation: scaleUp 0.6s ease-out;
+    }
+
+    .botao.brilho::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: burst 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      pointer-events: none;
+    }
+
+    @keyframes scaleUp {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes burst {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+      }
+      25% {
+        width: 60px;
+        height: 60px;
+        opacity: 0.8;
+      }
+      50% {
+        width: 120px;
+        height: 120px;
+        opacity: 0.4;
+      }
+      100% {
+        width: 200px;
+        height: 200px;
+        opacity: 0;
+      }
+    }
+
+    /* BOTÃO FAVORITO */
+    .btn-favorito {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .btn-favorito:hover {
+      background: #fef2f2;
+      border-color: #fda4af;
+      transform: scale(1.1);
+    }
+
+    .btn-favorito.ativo {
+      background: #fef2f2;
+      border-color: #e11d48;
+      color: #e11d48;
+    }
+
+    .detalhes-produto {
+      width: 320px;
+      min-width: 280px;
+      background: white;
+      padding: 24px;
+      border-radius: 24px 0 0 24px;
+      box-shadow: 4px 12px 35px rgba(0, 0, 0, 0.08);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: -360px;
+      overflow: hidden;
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: right 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .detalhes-produto.ativo {
+      right: 0;
+      height: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .detalhes-imagem {
+      width: 100%;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .detalhes-imagem img {
+      width: 100%;
+      height: auto;
+      max-height: 65vh;
+      border-radius: 18px;
+      object-fit: cover;
+    }
+
+    .detalhes-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .detalhe-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #fce7f3;
+      color: #be185d;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .detalhes-info {
+      margin-top: 18px;
+    }
+
+    .detalhes-info hr {
+      border: none;
+      height: 2px;
+      background: #e11d48;
+      opacity: 0.25;
+      margin-bottom: 18px;
+    }
+
+    .detalhes-resumo {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .detalhes-label {
+      display: block;
+      font-size: 0.82rem;
+      color: #777;
+      margin-bottom: 6px;
+    }
+
+    .detalhes-valor {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .detalhes-input-quantidade {
+      width: 60px;
+      padding: 6px 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #111;
+      border: 2px solid #fda4af;
+      border-radius: 8px;
+      background: white;
+      text-align: center;
+    }
+
+    .detalhes-input-quantidade::-webkit-outer-spin-button,
+    .detalhes-input-quantidade::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .detalhes-input-quantidade[type=number] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .detalhes-input-quantidade:focus {
+      outline: none;
+      border-color: #e11d48;
+      box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+    }
+
+    .detalhes-acoes {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .botao-mais,
+    .botao-menos {
+      width: 32px;
+      min-width: 32px;
+      padding: 8px 0;
+      border-radius: 14px;
+      font-size: 1rem;
+    }
+
+    .fechar-detalhes {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: white;
+      border: none;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .notificacao-container {
+      position: fixed;
+      top: 20px;
+      left: 20px !important;
+      right: auto !important;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1100;
+      pointer-events: none;
+      align-items: flex-start;
+    }
+
+    .notificacao {
+      width: 320px;
+      max-width: calc(100vw - 40px);
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+      opacity: 0;
+      transform: translateX(50px);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      pointer-events: auto;
+    }
+
+    .notificacao.ativo {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .notificacao-produto {
+      padding: 15px;
+    }
+
+    .notificacao-produto-conteudo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .notificacao-produto-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .notificacao-produto-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notificacao-produto-nome {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #333;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+
+    .notificacao-produto-mensagem {
+      font-size: 0.9rem;
+      color: #e11d48;
+      font-weight: 500;
+    }
+
+    .notificacao-barra {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #e11d48, #fb7185);
+      border-radius: 0 0 10px 10px;
+      animation: barraProgresso 3s linear forwards;
+    }
+
+    @keyframes barraProgresso {
+      0% { width: 100%; }
+      100% { width: 0%; }
+    }
+
+    .confete {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 50%;
+      z-index: 9999;
+    }
+
+    @keyframes confeteExplodir {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0) rotate(360deg);
+      }
+    }
+
+    .stars {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      font-size: 1.5em;
+      color: #fbbf24;
+      margin: 8px 0 10px 0;
+    }
+
+    .filtros-vazio {
+      text-align: center;
+      padding: 100px 20px;
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      min-height: calc(100vh - 200px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+
+    .filtros-vazio h2 {
+      font-size: 1.5rem;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+
+    .filtros-vazio p {
+      font-size: 1rem;
+      color: #9ca3af;
+    }
+
+    /* AVALIAÇÕES */
+    .rating {
+      color: #fbbf24;
+      font-size: 0.9rem;
+      margin: 5px 0;
+    }
+
+    @media (max-width: 768px) {
+      .filtros-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        width: 100%;
+        min-height: auto;
+        padding: 12px;
+      }
+
+      .card img {
+        height: 150px;
+      }
+
+      .filtros-header {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .filtros-header h1 {
+        font-size: 1.4rem;
+      }
+    }
+
+    /* AUMENTAR TAMANHOS DE FONTE NOS CARDS */
+    .card h3 {
+      font-size: 1.2rem !important;
+      font-weight: 780 !important;
+      text-align: center !important;
+    }
+
+    .card > p:nth-of-type(1) {
+      font-size: 1rem !important;
+      color: #1f2937 !important;
+    }
+
+    .card > p:nth-of-type(2) {
+      font-size: 1.1rem !important;
+      text-align: center !important;
+      font-weight: bold !important;
+      margin-bottom: 2px !important;
+    }
+
+    .card .preco {
+      font-size: 1.1rem !important;
+    }
+
+    /* ASSISTENTE VIRTUAL / CHATBOT */
+    .btn-assistente {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fa697f, #fda4af);
+      border: none;
+      color: white;
+      font-size: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.4);
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+
+    .btn-assistente:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(225, 29, 72, 0.6);
+    }
+
+    .chatbot-container {
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      width: 350px;
+      height: 500px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
+      display: none;
+      flex-direction: column;
+      z-index: 998;
+      overflow: hidden;
+      animation: abrirChat 0.3s ease-out;
+    }
+
+    .chatbot-container.ativo {
+      display: flex;
+    }
+
+    @keyframes abrirChat {
+      from {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .chatbot-header {
+      background: linear-gradient(135deg, #fa697f, #fda4af);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chatbot-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .btn-fechar-chat {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+    }
+
+    .btn-fechar-chat:hover {
+      transform: rotate(90deg);
+    }
+
+    .chatbot-mensagens {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: #f9fafb;
+    }
+
+    .mensagem {
+      margin-bottom: 15px;
+      display: flex;
+      animation: aparecerMensagem 0.3s ease;
+    }
+
+    @keyframes aparecerMensagem {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .mensagem.usuario {
+      justify-content: flex-end;
+    }
+
+    .mensagem-texto {
+      max-width: 70%;
+      padding: 12px 15px;
+      border-radius: 12px;
+      word-wrap: break-word;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .mensagem.assistente .mensagem-texto {
+      background: #e5e7eb;
+      color: #333;
+      border-radius: 12px 12px 12px 0;
+    }
+
+    .mensagem.usuario .mensagem-texto {
+      background: linear-gradient(135deg, #fa697f, #fda4af);
+      color: white;
+      border-radius: 12px 12px 0 12px;
+    }
+
+    .chatbot-input-area {
+      padding: 15px;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 10px;
+    }
+
+    .chatbot-input {
+      flex: 1;
+      border: 1px solid #d1d5db;
+      border-radius: 25px;
+      padding: 10px 15px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .chatbot-input:focus {
+      border-color: #fa697f;
+      box-shadow: 0 0 0 3px rgba(250, 105, 127, 0.1);
+    }
+
+    .btn-enviar-msg {
+      background: linear-gradient(135deg, #fa697f, #fda4af);
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      transition: 0.3s;
+      flex-shrink: 0;
+    }
+
+    .btn-enviar-msg:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(250, 105, 127, 0.3);
+    }
+
+    .chatbot-mensagens::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chatbot-mensagens::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    .chatbot-mensagens::-webkit-scrollbar-thumb {
+      background: #fa697f;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <!-- SPINNER DE CARREGAMENTO -->
+  <div id="pageLoadSpinner" class="page-load-spinner">
+    <div class="loader-brand">
+      <div class="loader-spinner">
+        <div class="loader-line"></div>
+      </div>
+      <img src="./images/icon site.png" alt="Stephany's Cosméticos" class="loader-logo">
+      <div class="loader-text">Stephany's Cosméticos carregando<span class="loader-dots"><span>.</span><span>.</span><span>.</span></span></div>
+      <div class="loader-bar">
+        <div class="loader-bar-segments">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVEGAÇÃO -->
+  <nav class="nav-global">
+    <a class="nav-brand" onclick="window.location.href='index.html'">Stephany's Cosméticos</a>
+    <ul class="nav-links">
+      <li><a href="index.html">🏠 Home</a></li>
+      <li><a href="favoritos.html">❤️ Favoritos</a></li>
+      <li><a href="filtros.html" class="ativo">🔍 Filtros</a></li>
+    </ul>
+  </nav>
+
+  <div class="notificacao-container" id="notificacaoContainer"></div>
+
+  <div class="filtros-search-row">
+    <div class="search-box">
+      <input type="text" id="filtroBusca" placeholder="Buscar produtos, categorias ou tags..." autocomplete="off">
+      <div id="searchSuggestions" class="search-suggestions" role="listbox"></div>
+      <button type="button" class="btn-busca" aria-label="Buscar produtos">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="4.3"/>
+          <path d="M20 20l-5.1-5.1"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <section>
+    <div class="filtro-preco">
+      <div class="campo-filtro">
+        <label for="precoMinimo">Preço Mínimo</label>
+        <input type="number" id="precoMinimo" placeholder="R$ 0,00" min="0" step="0.01">
+      </div>
+      <div class="campo-filtro">
+        <label for="precoMaximo">Preço Máximo</label>
+        <input type="number" id="precoMaximo" placeholder="R$ 1000,00" min="0" step="0.01">
+      </div>
+      <div class="campo-filtro">
+        <label for="ordenacao">Ordenar por</label>
+        <select id="ordenacao">
+          <option value="padrao">Padrão</option>
+          <option value="menor-preco">Menor Preço</option>
+          <option value="maior-preco">Maior Preço</option>
+          <option value="nome-a-z">Nome (A-Z)</option>
+        </select>
+      </div>
+      <button class="btn-filtrar-preco" onclick="aplicarFiltroPreco()">Filtrar</button>
+      <button class="btn-limpar-filtro" onclick="limparFiltroPreco()">Limpar</button>
+    </div>
+  </section>
+
+  <div class="filtros-container">
+    <div class="filtros-header">
+      <h1 id="filtroTitulo">🔍 Resultados do Filtro</h1>
+      <button class="btn-voltar" onclick="window.location.href='index.html'" title="Voltar">←</button>
+    </div>
+
+    <div class="filtros-body">
+      <aside class="filtros-sidebar">
+        <h2>Filtros avançados</h2>
+        <div class="filtro-bloco">
+          <h3>Categorias</h3>
+          <div id="categoriasFiltro"></div>
+        </div>
+        <div class="filtro-bloco">
+          <h3>Opções</h3>
+          <label><input type="checkbox" id="filtroSelo" value="selo"><span>Mais vendidos</span></label>
+        </div>
+        <button class="btn-aplicar-filtros" id="btnAplicarFiltroLateral">Aplicar filtros</button>
+      </aside>
+      <main class="filtros-main">
+        <div class="filtros-content">
+          <div id="filtrosGrid" class="filtros-grid">
+            <!-- Os produtos filtrados serão carregados aqui -->
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <aside class="detalhes-produto" id="painelDetalhesProduto">
+    <button class="fechar-detalhes" onclick="fecharDetalhesProduto()" aria-label="Fechar detalhes">✖</button>
+    <div class="detalhes-imagem">
+      <img src="" alt="">
+    </div>
+    <h3 class="detalhes-nome"></h3>
+    <div class="detalhes-tags"></div>
+    <p class="detalhes-descricao"></p>
+    <div class="detalhes-info">
+      <hr>
+      <div class="detalhes-resumo">
+        <div>
+          <span class="detalhes-label">Quantidade</span>
+          <input type="number" id="quantidadeProduto" class="detalhes-input-quantidade" min="1" value="1">
+        </div>
+        <div>
+          <span class="detalhes-label">Valor</span>
+          <div class="detalhes-valor" id="valorTotalProduto">R$ 0,00</div>
+        </div>
+      </div>
+      <div class="detalhes-acoes">
+        <button type="button" class="botao botao-menos" onclick="ajustarQuantidade(-1)">-</button>
+        <button type="button" class="botao botao-adicionar-detalhe" onclick="adicionarAoCarrinhoDetalhe(this)">Adicionar ao carrinho</button>
+        <button type="button" class="botao botao-mais" onclick="ajustarQuantidade(1)">+</button>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    // Carregar filtros do localStorage
+    let filtrosAtuais = JSON.parse(sessionStorage.getItem('filtrosAtuais')) || null;
+
+    // Obter produtos padrão
+    function obterProdutosPadrao() {
+      return [
+        { nome: 'Royal Batom Attraction', preco: '40,89', descricao: '💄 Batom matte com cor intensa ✨ e acabamento impecável 💖 Fórmula resistente de longa duração ⏰ que mantém os lábios lindos o dia todo 🌸 Textura confortável 🎀 efeito aveludado 💋 e pigmentação forte 👑.', imagem: './images/batom.png', alt: 'Royal Batom Attraction', categorias: ['Rosto', 'Maquiagem'], selo: true, id: 1 },
+        { nome: 'Sérum Facial revitalizante Gold', preco: '256,90', descricao: '✨ Sérum facial com toque leve 🌿 e hidratação profunda 💖 Fórmula revitalizante 🌱 que ajuda a controlar a oleosidade 💧 e suavizar imperfeições 🌸 Pele mais macia 🎀 iluminada 💎 e renovada diariamente 👑', imagem: './images/Sérum venda-1.png', alt: 'Sérum Facial revitalizante Gold', categorias: ['Rosto'], selo: false, id: 2 },
+        { nome: 'Perfume Luxo Confiance', preco: '487,90', descricao: ' 🌸 Fragrância marcante com notas florais 🌷 delicadas 💖 Aroma envolvente 👑 e fixação prolongada 💎 que acompanha você o dia inteiro ⏰ Sensação sofisticada 🎀 perfeita para ocasiões especiais ✨', imagem: './images/perfume venda -2.png', alt: 'Perfume Luxo Confiance', categorias: ['Perfumaria'], selo: false, id: 3 },
+        { nome: 'glós Velvet Cover brilhius', preco: '89,90', descricao: '💫 Gloss 👄 veludo com efeito 🪞 espelho e volume instantâneo! Textura 💧 macia que hidrata 🌸 profundamente, sem grudar. Brilho ✨ espetacular que dura horas, perfeito 💕 para qualquer ocasião.', imagem: './images/glos venda -1.png', alt: 'glós Velvet Cover brilhius', categorias: ['Rosto', 'Maquiagem'], selo: true, id: 4 },
+        { nome: 'Pó Facial Royal glass fort', preco: '58,90', descricao: '🌬️ Pó translúcido com acabamento suave e efeito natural 💖 Controla a oleosidade 🌟 sem marcar a pele 💎 Textura leve 🎀 confortável e perfeita para manter a maquiagem 🎨 impecável ⏰.', imagem: './images/Pó venda -1.png', alt: 'Pó Facial Royal glass fort', categorias: ['Rosto', 'Maquiagem'], selo: false, id: 5 },
+        { nome: 'Sabonete Líquido Elegance', preco: '79,90', descricao: '🧼 Sabonete líquido 🧴 com espuma cremosa e fragrância delicada 🌸 Limpeza suave 💧 que deixa a pele macia 🎀 hidratada e perfumada 💖 Sensação refrescante 🫧 perfeita para a elegância do dia a dia 👑.', imagem: './images/Sabonete liquido venda -1.png', alt: 'Sabonete Líquido Elegance', categorias: ['Cuidados-diarios'], selo: false, id: 6 },
+        { nome: 'Protetor Solar Radiance', preco: '97,90', descricao: '☀️ Protetor solar FPS 50+ ✨ com textura leve e toque sequinho 💖 Proteção UVA/UVB 🛡️ que ajuda a cuidar da pele diariamente 🌸 Acabamento natural 💧 confortável e ideal para todos os momentos 👑.', imagem: './images/protetor solar venda -1.png', alt: 'Protetor Solar Radiance', categorias: ['Rosto'], selo: false, id: 7 },
+        { nome: 'Body Splash refreshment', preco: '134,00', descricao: '🍓 Body splash com fragrância leve e refrescante 🌸 Aroma delicado 💖 que perfuma suavemente a pele 🎀 Sensação refrescante 💧 secagem rápida 🌟 e toque confortável para o dia todo 👑.', imagem: './images/Body splash venda -1.png', alt: 'Body Splash refreshment', categorias: ['Perfumaria'], selo: true, id: 8 },
+        { nome: 'Esfoliante Corporal Esfólyus', preco: '86,67', descricao: '🧖 Esfoliante 🌿 corporal com grânulos naturais 🧴 e óleos essenciais! Remove ✨ células mortas suavemente, deixando 💧 a pele macia e radiante 🌸. Ideal pós-depilação sem irritar 💕.', imagem: './images/Esfoliante venda -1.png', alt: 'Esfoliante Corporal Esfólyus', categorias: ['Cuidados-diarios'], selo: true, id: 9 },
+        { nome: 'Shampoo Revitalizante vival', preco: '188,90', descricao: '🧴 Shampoo revitalizante ✨ com fórmula nutritiva e toque suave 💖 Ajuda a fortalecer os fios 🌿 enquanto proporciona brilho intenso 🌟 Espuma cremosa 🎀 sensação refrescante 💧 e cabelos mais macios 🪶.', imagem: './images/shampoo venda -1.png', alt: 'Shampoo Revitalizante vival', categorias: ['Cuidados-diarios'], selo: true, id: 10 },
+        { nome: 'Creme Corporal Hidratante', preco: '101,90', descricao: '🧴 Creme corporal ✨ com manteiga de Karité 🥑 e absorção rápida ✨ Nutrição intensa 🌿 que ajuda a restaurar o brilho natural da pele 💧 Toque sedoso 🌸 perfume envolvente 🎀 e sensação de cuidado prolongado 👑', imagem: './images/creme corporal venda -1.png', alt: 'Creme Corporal Hidratante', categorias: ['Cuidados-diarios'], selo: true, id: 11 },
+        { nome: 'Perfume Floral Premium', preco: '218,99', descricao: '✨ Perfume floral 🌹 com essência marcante e toque refinado 👑 Notas delicadas de jasmim 🌸 e rosa envolvem a pele com um aroma elegante 💖 Fixação prolongada ⏰ e presença irresistível em cada borrifada 💎.', imagem: './images/perfume venda -1.png', alt: 'Perfume Floral Premium', categorias: ['Perfumaria'], selo: true, id: 12 },
+        { nome: 'Precision Eyeliner Black', preco: '118,99', descricao: '👁️ Delineador com ponta precisa ✏️ e pigmentação intensa 🖤 Desliza facilmente 🎯 criando traços definidos e elegantes 💖 Fórmula resistente 💧 de longa duração ⏰ para um olhar marcante o dia inteiro 👑.', imagem: './images/Lapíz venda -1.png', alt: 'Precision Eyeliner Black', categorias: ['Maquiagem', 'Rosto'], selo: true, id: 13 },
+        { nome: 'Hair Oil Nutritive Forts Gold', preco: '434,99', descricao: ' ✨ Óleo 💛 capilar 24K com partículas de Ouro que sela 🔐 as cutículas e potencializa 🌟 o brilho! Reduz frizz 💨 instantaneamente e protege 🔥 do calor até 230°C. Fios sedosos 👑 e macios o dia todo.⏰.', imagem: './images/Óleo venda -1.png', alt: 'Hair Oil Nutritive Forts Gold', categorias: ['Cabelos'], selo: true, id: 14 },
+        { nome: 'Conditioner Hidra Silk Dominiun', preco: '239,99', descricao: '💆‍♀️ Condicionador 🧴 com hidratação intensa ✨ e toque sedoso nos fios 💖 Fórmula leve 🌬️ que deixa o cabelo mais macio 🪶 alinhado 🌟 e com brilho radiante como uma Hidra🐉.', imagem: './images/Condicionador venda -1.png', alt: 'Conditioner Hidra Silk Dominiun', categorias: ['Cabelos'], selo: true, id: 15 },
+        { nome: 'Máscara Facial Detoxify', preco: '682,11', descricao: '✨ Máscara premium Dimond 🧴 com nutrição intensa e toque restaurador 💖 Ajuda a fortalecer os fios 💪 devolvendo brilho radiante 🌟 e deixando o cabelo sedoso 👑 saudável e cheio de vida ✨', imagem: './images/Creme mask Dimond.png', alt: 'Hair Mask Repair Dimond', categorias: ['Rosto'], selo: true, id: 16 },
+        { nome: 'Glamour Eau de Perfum', preco: '1522,99', descricao: '👑 Fragrância sofisticada e envolvente com alta fixação! 🌸✨ Notas florais delicadas que revelam elegância e glamour ao longo do dia 💖 deixando uma presença marcante e irresistível 💎.', imagem: './images/perfume venda -3.png', alt: 'Glamour Eau de Perfum', categorias: ['Perfumaria'], selo: true, id: 17 },
+        { nome: 'Paleta de Cor Rosé Dream', preco: '875,43', descricao: '👑 paleta perfeita para criar makes sofisticadas e iluminadas 💖 Com tons rosados 🌸 elegantes e partículas de brilho intenso ✨ sua textura macia entrega um acabamento aveludado 🎀 na aplicação 💕.', imagem: './images/paleta de cor venda -1.png', alt: 'Paleta de Cor Rosé Dream', categorias: ['Rosto', 'Maquiagem'], selo: true, id: 18 }
+      ];
+    }
+
+    let produtos = JSON.parse(localStorage.getItem('produtos')) || obterProdutosPadrao();
+    let favoritos = JSON.parse(localStorage.getItem('favoritos')) || [];
+    let detalheQuantidade = 1;
+    let detalhePrecoUnitario = 0;
+
+    function carregarFiltros() {
+      const grid = document.getElementById('filtrosGrid');
+      grid.innerHTML = '';
+
+      const produtosIds = filtrosAtuais && filtrosAtuais.cardsVisiveis && filtrosAtuais.cardsVisiveis.length > 0
+        ? filtrosAtuais.cardsVisiveis
+        : produtos.map(produto => produto.id);
+
+      if (!produtosIds || produtosIds.length === 0) {
+        grid.innerHTML = '<div class="filtros-vazio"><h2>Nenhum resultado</h2><p>Volte e tente diferentes filtros</p></div>';
+        return;
+      }
+      produtosIds.forEach(id => {
+        const produto = produtos.find(p => p.id === id);
+        if (produto) {
+          const isFavorito = favoritos.includes(produto.nome);
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <button class="btn-favorito ${isFavorito ? 'ativo' : ''}" onclick="toggleFavorito('${produto.nome}', event)" title="Adicionar aos favoritos">
+              ${isFavorito ? '❤️' : '🤍'}
+            </button>
+            <img src="${produto.imagem}" alt="${produto.alt}">
+            <div style="margin-bottom: 8px;">
+              ${produto.categorias.map(cat => `<span class="categoria-tag">${cat}</span>`).join('')}
+            </div>
+            <h3>${produto.nome}</h3>
+            <p>${produto.descricao}</p>
+            <p class="preco">R$ ${produto.preco}</p>
+            <button class="botao" onclick="adicionarAoCarrinho('${produto.nome}', this)">Adicionar ao Carrinho</button>
+          `;
+          card.addEventListener('click', function(event) {
+            if (event.target.closest('button')) return;
+            mostrarDetalhesProduto(card);
+          });
+          card.querySelectorAll('button').forEach(btn => btn.addEventListener('click', event => event.stopPropagation()));
+          grid.appendChild(card);
+        }
+      });
+    }
+
+    function toggleFavorito(nomeProduto, event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const btn = event.target.closest('.btn-favorito');
+      const card = btn.closest('.card');
+      const imagemSrc = card.querySelector('img').src;
+      favoritos = JSON.parse(localStorage.getItem('favoritos')) || [];
+      const index = favoritos.indexOf(nomeProduto);
+
+      if (index > -1) {
+        favoritos.splice(index, 1);
+        btn.classList.remove('ativo');
+        btn.textContent = '🤍';
+        mostrarNotificacaoProduto(imagemSrc, nomeProduto, 'Removido dos favoritos');
+      } else {
+        favoritos.push(nomeProduto);
+        btn.classList.add('ativo');
+        btn.textContent = '❤️';
+        mostrarNotificacaoProduto(imagemSrc, nomeProduto, 'Adicionado aos favoritos!');
+      }
+
+      localStorage.setItem('favoritos', JSON.stringify(favoritos));
+    }
+
+    function parsePreco(preco) {
+      if (typeof preco === 'number') return preco;
+      if (typeof preco !== 'string') return Number(preco) || 0;
+      return parseFloat(preco.replace(/[R$\s\.]/g, '').replace(',', '.')) || 0;
+    }
+
+    function obterCategoriasUnicas() {
+      const categorias = new Set();
+      produtos.forEach(produto => {
+        produto.categorias.forEach(cat => categorias.add(cat));
+      });
+      return Array.from(categorias).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    }
+
+    function renderizarSidebarCategorias() {
+      const container = document.getElementById('categoriasFiltro');
+      if (!container) return;
+      const categorias = obterCategoriasUnicas();
+      container.innerHTML = categorias.map(categoria => `
+        <label>
+          <input type="checkbox" value="${categoria}">
+          <span>${categoria}</span>
+        </label>
+      `).join('');
+    }
+
+    function obterFiltrosLaterais() {
+      const categoriasSelecionadas = Array.from(document.querySelectorAll('#categoriasFiltro input[type="checkbox"]:checked')).map(el => el.value);
+      const selo = document.getElementById('filtroSelo')?.checked;
+      return { categoriasSelecionadas, selo };
+    }
+
+    function adicionarAoCarrinho(produtoNome, btn) {
+      let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+      const produto = produtos.find(p => p.nome === produtoNome);
+
+      if (btn) {
+        btn.classList.add('brilho');
+        setTimeout(() => btn.classList.remove('brilho'), 800);
+        criarConfetes(btn);
+      }
+
+      if (produto) {
+        const itemExistente = carrinho.find(item => item.nome === produtoNome);
+        if (itemExistente) {
+          itemExistente.quantidade = (itemExistente.quantidade || 1) + 1;
+        } else {
+          carrinho.push({ ...produto, preco: parsePreco(produto.preco), quantidade: 1 });
+        }
+
+        carrinho = carrinho.map(item => ({ ...item, preco: parsePreco(item.preco) }));
+        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        sessionStorage.setItem('carrinhoTemp', JSON.stringify(carrinho));
+        mostrarNotificacaoProduto(produto.imagem, produto.nome);
+      }
+    }
+
+    function mostrarNotificacaoProduto(imagem, nome, mensagem = 'Adicionado ao carrinho') {
+      const container = document.getElementById('notificacaoContainer');
+      if (!container) return;
+
+      const notificacao = document.createElement('div');
+      notificacao.className = 'notificacao notificacao-produto';
+      notificacao.innerHTML = `
+        <div class="notificacao-produto-conteudo">
+          <img src="${imagem}" alt="${nome}" class="notificacao-produto-img">
+          <div class="notificacao-produto-info">
+            <div class="notificacao-produto-nome">${nome}</div>
+            <div class="notificacao-produto-mensagem">${mensagem}</div>
+          </div>
+        </div>
+        <div class="notificacao-barra"></div>
+      `;
+      container.appendChild(notificacao);
+      setTimeout(() => notificacao.classList.add('ativo'), 10);
+
+      setTimeout(() => {
+        notificacao.classList.remove('ativo');
+        setTimeout(() => {
+          if (notificacao.parentNode) {
+            notificacao.parentNode.removeChild(notificacao);
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    function criarConfetes(btn) {
+      const rect = btn.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      const cores = ['#e11d48', '#fb7185', '#fda4af', '#fecdd3', '#f87171'];
+
+      for (let i = 0; i < 15; i++) {
+        const confete = document.createElement('div');
+        confete.classList.add('confete');
+
+        const cor = cores[Math.floor(Math.random() * cores.length)];
+        const tamanho = Math.random() * 8 + 4;
+        const angulo = (Math.PI * 2 * i) / 15 + (Math.random() - 0.5);
+        const velocidade = Math.random() * 200 + 150;
+
+        const tx = Math.cos(angulo) * velocidade;
+        const ty = Math.sin(angulo) * velocidade - 100;
+
+        confete.style.left = x + 'px';
+        confete.style.top = y + 'px';
+        confete.style.width = tamanho + 'px';
+        confete.style.height = tamanho + 'px';
+        confete.style.backgroundColor = cor;
+        confete.style.setProperty('--tx', tx + 'px');
+        confete.style.setProperty('--ty', ty + 'px');
+        confete.style.animation = 'confeteExplodir 1.5s ease-out forwards';
+
+        document.body.appendChild(confete);
+        setTimeout(() => confete.remove(), 1500);
+      }
+    }
+
+    function atualizarDetalhesProduto() {
+      const quantidadeEl = document.getElementById('quantidadeProduto');
+      const totalEl = document.getElementById('valorTotalProduto');
+      if (quantidadeEl) quantidadeEl.value = detalheQuantidade;
+      if (totalEl) totalEl.textContent = `R$ ${(detalhePrecoUnitario * detalheQuantidade).toFixed(2).replace('.', ',')}`;
+    }
+
+    function ajustarQuantidade(delta) {
+      detalheQuantidade = Math.max(1, detalheQuantidade + delta);
+      atualizarDetalhesProduto();
+    }
+
+    function adicionarAoCarrinhoDetalhe(btn) {
+      const painel = document.getElementById('painelDetalhesProduto');
+      const nome = painel.querySelector('.detalhes-nome') ? painel.querySelector('.detalhes-nome').textContent : '';
+      const produto = produtos.find(p => p.nome === nome);
+      if (!produto) return;
+
+      let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+      const itemExistente = carrinho.find(item => item.nome === nome);
+      if (itemExistente) {
+        itemExistente.quantidade = (itemExistente.quantidade || 1) + detalheQuantidade;
+      } else {
+        carrinho.push({ ...produto, preco: parsePreco(produto.preco), quantidade: detalheQuantidade });
+      }
+      carrinho = carrinho.map(item => ({ ...item, preco: parsePreco(item.preco) }));
+      localStorage.setItem('carrinho', JSON.stringify(carrinho));
+      sessionStorage.setItem('carrinhoTemp', JSON.stringify(carrinho));
+      mostrarNotificacaoProduto(produto.imagem, produto.nome);
+      fecharDetalhesProduto();
+    }
+
+    function mostrarDetalhesProduto(element) {
+      const card = element.closest('.card') || element;
+      const nome = card.querySelector('h3') ? card.querySelector('h3').textContent : '';
+      const imagem = card.querySelector('img');
+      const descricao = card.querySelector('p') ? card.querySelector('p').textContent : '';
+      const precoTexto = card.querySelector('.preco') ? card.querySelector('.preco').textContent : '';
+      const tags = Array.from(card.querySelectorAll('.categoria-tag')).map(tag => tag.textContent);
+      const painel = document.getElementById('painelDetalhesProduto');
+
+      detalheQuantidade = 1;
+      detalhePrecoUnitario = parseFloat(precoTexto.replace(/[R$\s\.]/g, '').replace(',', '.')) || 0;
+      atualizarDetalhesProduto();
+
+      if (painel) {
+        painel.querySelector('.detalhes-imagem img').src = imagem ? imagem.src : '';
+        painel.querySelector('.detalhes-imagem img').alt = imagem ? imagem.alt : nome;
+        painel.querySelector('.detalhes-nome').textContent = nome;
+        painel.querySelector('.detalhes-descricao').textContent = descricao;
+        painel.querySelector('.detalhes-tags').innerHTML = tags.map(tag => `<span class="detalhe-tag">${tag}</span>`).join('');
+        painel.classList.add('ativo');
+      }
+    }
+
+    function fecharDetalhesProduto() {
+      const painel = document.getElementById('painelDetalhesProduto');
+      if (painel) painel.classList.remove('ativo');
+    }
+
+    // Atualizar título se houver filtros
+    if (filtrosAtuais && filtrosAtuais.titulo) {
+      document.getElementById('filtroTitulo').textContent = filtrosAtuais.titulo;
+    }
+
+    function obterFiltrosDaLinha() {
+      const termo = document.getElementById('filtroBusca').value.trim().toLowerCase();
+      const min = parseFloat(document.getElementById('precoMinimo').value.replace(',', '.'));
+      const max = parseFloat(document.getElementById('precoMaximo').value.replace(',', '.'));
+      const ordenacao = document.getElementById('ordenacao').value;
+
+      return {
+        termo: termo || null,
+        min: isNaN(min) ? null : min,
+        max: isNaN(max) ? null : max,
+        ordenacao
+      };
+    }
+
+    function aplicarFiltrosDaLinha() {
+      const { termo, min, max, ordenacao } = obterFiltrosDaLinha();
+      const filtrosLaterais = obterFiltrosLaterais();
+
+      let produtosFiltrados = produtos.filter(produto => {
+        const valor = parsePreco(produto.preco);
+        if (min !== null && valor < min) return false;
+        if (max !== null && valor > max) return false;
+
+        if (termo) {
+          const textoBusca = `${produto.nome} ${produto.descricao} ${produto.categorias.join(' ')}`.toLowerCase();
+          if (!textoBusca.includes(termo)) return false;
+        }
+
+        if (filtrosLaterais.categoriasSelecionadas.length > 0 && !filtrosLaterais.categoriasSelecionadas.some(cat => produto.categorias.includes(cat))) {
+          return false;
+        }
+
+        if (filtrosLaterais.selo && !produto.selo) {
+          return false;
+        }
+
+        return true;
+      });
+
+      if (ordenacao === 'menor-preco') {
+        produtosFiltrados.sort((a, b) => parsePreco(a.preco) - parsePreco(b.preco));
+      } else if (ordenacao === 'maior-preco') {
+        produtosFiltrados.sort((a, b) => parsePreco(b.preco) - parsePreco(a.preco));
+      } else if (ordenacao === 'nome-a-z') {
+        produtosFiltrados.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+      }
+
+      filtrosAtuais = {
+        cardsVisiveis: produtosFiltrados.map(produto => produto.id),
+        titulo: termo ? `Resultados para "${termo}"` : 'Filtros aplicados'
+      };
+      sessionStorage.setItem('filtrosAtuais', JSON.stringify(filtrosAtuais));
+
+      document.getElementById('filtroTitulo').textContent = filtrosAtuais.titulo;
+      carregarFiltros();
+    }
+
+    function aplicarFiltroPreco() {
+      aplicarFiltrosDaLinha();
+    }
+
+    function limparFiltroPreco() {
+      document.getElementById('filtroBusca').value = '';
+      document.getElementById('precoMinimo').value = '';
+      document.getElementById('precoMaximo').value = '';
+      document.getElementById('ordenacao').value = 'padrao';
+      filtrosAtuais = null;
+      document.getElementById('filtroTitulo').textContent = '🔍 Resultados do Filtro';
+      carregarFiltros();
+    }
+
+    function atualizarSugestoesFiltros(termo) {
+      const lista = document.getElementById('searchSuggestions');
+      if (!lista) return;
+      const query = (termo || '').trim().toLowerCase();
+      lista.innerHTML = '';
+      if (!query) {
+        lista.style.display = 'none';
+        return;
+      }
+
+      const cards = Array.from(document.querySelectorAll('.filtros-grid .card'));
+      const resultados = cards.map(card => ({
+        nome: card.querySelector('h3')?.textContent || '',
+        descricao: card.querySelector('p')?.textContent || '',
+        categorias: card.dataset.categorias || card.dataset.categoria || '',
+        card
+      })).filter(item => {
+        const texto = [item.nome, item.descricao, item.categorias].join(' ').toLowerCase();
+        return texto.includes(query);
+      }).slice(0, 5);
+
+      if (resultados.length === 0) {
+        lista.style.display = 'none';
+        return;
+      }
+
+      resultados.forEach(item => {
+        const botao = document.createElement('button');
+        botao.type = 'button';
+        botao.className = 'suggestion-item';
+        botao.textContent = item.nome || item.categorias || 'Ver produto';
+        botao.addEventListener('click', () => {
+          const input = document.getElementById('filtroBusca');
+          if (input) input.value = item.nome;
+          lista.style.display = 'none';
+          filtrarProdutosAoDigitar(item.nome);
+        });
+        lista.appendChild(botao);
+      });
+
+      lista.style.display = 'block';
+    }
+
+    function filtrarProdutosAoDigitar(termo) {
+      const query = (termo || '').trim().toLowerCase();
+      const grid = document.getElementById('filtrosGrid');
+      if (!grid) return;
+
+      const cards = grid.querySelectorAll('.card');
+      let count = 0;
+
+      cards.forEach(card => {
+        const texto = [
+          card.querySelector('h3')?.textContent,
+          Array.from(card.querySelectorAll('p')).map(p => p.textContent).join(' '),
+          card.dataset.categorias || card.dataset.categoria,
+          Array.from(card.querySelectorAll('.categoria-tag')).map(tag => tag.textContent).join(' ')
+        ].join(' ').toLowerCase();
+
+        if (!query || texto.includes(query)) {
+          card.style.display = 'flex';
+          count++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Atualizar título
+      const titulo = document.getElementById('filtroTitulo');
+      if (titulo) {
+        titulo.textContent = query ? `Buscando por "${termo}"` : '🔍 Resultados do Filtro';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnBusca = document.querySelector('.btn-busca');
+      const campoBusca = document.getElementById('filtroBusca');
+
+      if (btnBusca) {
+        btnBusca.addEventListener('click', aplicarFiltrosDaLinha);
+      }
+
+      if (campoBusca) {
+        campoBusca.addEventListener('input', function(event) {
+          const termo = event.target.value;
+          filtrarProdutosAoDigitar(termo);
+          atualizarSugestoesFiltros(termo);
+        });
+
+        campoBusca.addEventListener('keydown', event => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            aplicarFiltrosDaLinha();
+          } else if (event.key === 'Escape') {
+            const lista = document.getElementById('searchSuggestions');
+            if (lista) lista.style.display = 'none';
+          }
+        });
+      }
+
+      document.addEventListener('click', function(event) {
+        if (!event.target.closest('#filtroBusca') && !event.target.closest('#searchSuggestions')) {
+          const lista = document.getElementById('searchSuggestions');
+          if (lista) lista.style.display = 'none';
+        }
+      });
+
+      const btnAplicarFiltroLateral = document.getElementById('btnAplicarFiltroLateral');
+      if (btnAplicarFiltroLateral) {
+        btnAplicarFiltroLateral.addEventListener('click', aplicarFiltrosDaLinha);
+      }
+
+      renderizarSidebarCategorias();
+
+      const categoriasFiltroContainer = document.getElementById('categoriasFiltro');
+      if (categoriasFiltroContainer) {
+        categoriasFiltroContainer.addEventListener('change', aplicarFiltrosDaLinha);
+      }
+
+      const filtroSeloCheckbox = document.getElementById('filtroSelo');
+      if (filtroSeloCheckbox) {
+        filtroSeloCheckbox.addEventListener('change', aplicarFiltrosDaLinha);
+      }
+    });
+
+    // Carregar ao abrir a página
+    carregarFiltros();
+
+    // Função para esconder o spinner de carregamento
+    function esconderSpinnerDeCarregamento() {
+      const spinner = document.getElementById('pageLoadSpinner');
+      if (!spinner) return;
+      spinner.classList.add('hidden');
+    }
+
+    // Esconder spinner quando página termina de carregar
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        esconderSpinnerDeCarregamento();
+      }, 2500);
+    });
+  </script>
+</body>
+</html>

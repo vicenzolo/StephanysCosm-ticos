@@ -11,6 +11,134 @@
       box-sizing: border-box;
     }
 
+    /* SPINNER DE CARREGAMENTO */
+    .page-load-spinner {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.98);
+      z-index: 2000;
+      transition: opacity 4s ease, visibility 0s ease 4s;
+    }
+
+    .page-load-spinner.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-brand {
+      text-align: center;
+      position: relative;
+    }
+
+    .loader-logo {
+      width: 140px;
+      max-width: 100%;
+      animation: pulse-logo 1.4s ease-in-out infinite;
+      filter: drop-shadow(0 12px 30px rgba(199, 34, 85, 0.16));
+      position: relative;
+      z-index: 2;
+    }
+
+    .loader-spinner {
+      position: absolute;
+      top: 41%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 240px;
+      height: 240px;
+      z-index: 1;
+    }
+
+    .loader-line {
+      position: absolute;
+      top: 38%;
+      left: 50%;
+      width: 180px;
+      height: 180px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border-top: 10px solid rgba(255,255,255,0.95);
+      border-right: 10px solid rgba(251,113,133,0.95);
+      border-bottom: 10px solid transparent;
+      border-left: 10px solid transparent;
+      box-shadow: 0 0 18px rgba(251,113,133,0.35), inset 0 0 12px rgba(255,255,255,0.55);
+      animation: spinner 1.2s linear infinite;
+    }
+
+    .loader-line::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: transparent;
+      opacity: 0.4;
+      filter: blur(6px);
+    }
+
+    @keyframes spinner {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes pulse-logo {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .loader-text {
+      margin-top: 18px;
+      color: #9f2f5e;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+    }
+
+    .loader-bar {
+      width: 260px;
+      max-width: 90vw;
+      margin: 16px auto 0;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(251, 113, 133, 0.22);
+      box-shadow: inset 0 1px 12px rgba(255, 255, 255, 0.56), inset 0 0 16px rgba(251, 113, 133, 0.18);
+    }
+
+    .loader-bar-segments {
+      display: flex;
+      gap: 6px;
+    }
+
+    .loader-bar-segments span {
+      flex: 1;
+      min-width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(251, 113, 133, 0.95);
+      opacity: 1;
+      animation: loader-bar-segment 1.4s ease-in-out infinite;
+      box-shadow: 0 0 8px rgba(251, 113, 133, 0.25);
+    }
+
+    .loader-bar-segments span:nth-child(1) { animation-delay: 0s; }
+    .loader-bar-segments span:nth-child(2) { animation-delay: 0.1s; }
+    .loader-bar-segments span:nth-child(3) { animation-delay: 0.2s; }
+    .loader-bar-segments span:nth-child(4) { animation-delay: 0.3s; }
+    .loader-bar-segments span:nth-child(5) { animation-delay: 0.4s; }
+    .loader-bar-segments span:nth-child(6) { animation-delay: 0.5s; }
+    .loader-bar-segments span:nth-child(7) { animation-delay: 0.6s; }
+    .loader-bar-segments span:nth-child(8) { animation-delay: 0.7s; }
+    .loader-bar-segments span:nth-child(9) { animation-delay: 0.8s; }
+    .loader-bar-segments span:nth-child(10) { animation-delay: 0.9s; }
+
+    @keyframes loader-bar-segment {
+      0%, 100% { opacity: 0.25; }
+      50% { opacity: 1; }
+    }
+
     /* NAVEGAÇÃO GLOBAL */
     .nav-global {
       background: linear-gradient(135deg, #fda4af, #fb7185);
@@ -403,6 +531,20 @@
   </style>
 </head>
 <body>
+  <div id="pageLoadSpinner" class="page-load-spinner">
+    <div class="loader-brand">
+      <div class="loader-spinner">
+        <div class="loader-line"></div>
+      </div>
+      <img src="./images/icon site.png" alt="Stephany's Cosméticos" class="loader-logo">
+      <div class="loader-text">Stephany's Cosméticos carregando<span class="loader-dots"><span>.</span><span>.</span><span>.</span></span></div>
+      <div class="loader-bar">
+        <div class="loader-bar-segments">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="cadastro-container">
     <div class="cadastro-header">
@@ -845,6 +987,18 @@
         div.remove();
       }, 3000);
     }
+
+    function esconderSpinnerDeCarregamento() {
+      const spinner = document.getElementById('pageLoadSpinner');
+      if (!spinner) return;
+      spinner.classList.add('hidden');
+    }
+
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        esconderSpinnerDeCarregamento();
+      }, 2500);
+    });
   </script>
 </body>
 </html>

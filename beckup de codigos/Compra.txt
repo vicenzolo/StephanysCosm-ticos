@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finalizar Compra</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* SPINNER DE CARREGAMENTO */
+    .page-load-spinner {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(248, 250, 252, 0.95);
+      z-index: 2000;
+      transition: opacity 4s ease, visibility 0s ease 4s;
+    }
+
+    .page-load-spinner.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-brand {
+      text-align: center;
+      position: relative;
+    }
+
+    .loader-logo {
+      width: 140px;
+      max-width: 100%;
+      animation: pulse-logo 1.4s ease-in-out infinite;
+      filter: drop-shadow(0 12px 30px rgba(199, 34, 85, 0.16));
+      position: relative;
+      z-index: 2;
+    }
+
+    .loader-spinner {
+      position: absolute;
+      top: 41%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 240px;
+      height: 240px;
+      z-index: 1;
+    }
+
+    .loader-line {
+      position: absolute;
+      top: 38%;
+      left: 50%;
+      width: 180px;
+      height: 180px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border-top: 10px solid rgba(255,255,255,0.95);
+      border-right: 10px solid rgba(251,113,133,0.95);
+      border-bottom: 10px solid transparent;
+      border-left: 10px solid transparent;
+      box-shadow: 0 0 18px rgba(251,113,133,0.35), inset 0 0 12px rgba(255,255,255,0.55);
+      animation: spinner 1.2s linear infinite;
+    }
+
+    .loader-line::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: transparent;
+      opacity: 0.4;
+      filter: blur(6px);
+    }
+
+    @keyframes spinner {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes pulse-logo {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .loader-text {
+      margin-top: 18px;
+      color: #9f2f5e;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+    }
+
+    .loader-bar {
+      width: 260px;
+      max-width: 90vw;
+      margin: 16px auto 0;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(251, 113, 133, 0.22);
+      box-shadow: inset 0 1px 12px rgba(255, 255, 255, 0.56), inset 0 0 16px rgba(251, 113, 133, 0.18);
+    }
+
+    .loader-bar-segments {
+      display: flex;
+      gap: 6px;
+    }
+
+    .loader-bar-segments span {
+      flex: 1;
+      min-width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(251, 113, 133, 0.95);
+      opacity: 1;
+      animation: loader-bar-segment 1.4s ease-in-out infinite;
+      box-shadow: 0 0 8px rgba(251, 113, 133, 0.25);
+    }
+
+    .loader-bar-segments span:nth-child(1) { animation-delay: 0s; }
+    .loader-bar-segments span:nth-child(2) { animation-delay: 0.1s; }
+    .loader-bar-segments span:nth-child(3) { animation-delay: 0.2s; }
+    .loader-bar-segments span:nth-child(4) { animation-delay: 0.3s; }
+    .loader-bar-segments span:nth-child(5) { animation-delay: 0.4s; }
+    .loader-bar-segments span:nth-child(6) { animation-delay: 0.5s; }
+    .loader-bar-segments span:nth-child(7) { animation-delay: 0.6s; }
+    .loader-bar-segments span:nth-child(8) { animation-delay: 0.7s; }
+    .loader-bar-segments span:nth-child(9) { animation-delay: 0.8s; }
+    .loader-bar-segments span:nth-child(10) { animation-delay: 0.9s; }
+
+    @keyframes loader-bar-segment {
+      0%, 100% { opacity: 0.25; }
+      50% { opacity: 1; }
+    }
+
+    /* NAVEGAÇÃO GLOBAL */
+    .nav-global {
+      background: linear-gradient(135deg, #fda4af, #fb7185);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-brand {
+      color: white;
+      font-weight: 700;
+      font-size: 1.3rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.ativo {
+      background: rgba(255,255,255,0.2);
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8fafc;
+      min-height: 100vh;
+      color: #111827;
+    }
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header h1 {
+      font-size: 1.6rem;
+    }
+    .btn-voltar {
+      background: #f3f4f6;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: #374151;
+      font-weight: 700;
+    }
+    .btn-voltar:hover {
+      background: #e5e7eb;
+    }
+    .content {
+      flex: 1;
+      padding: 32px;
+      display: grid;
+      gap: 24px;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr);
+    }
+    .section {
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+      padding: 24px;
+    }
+    .section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 18px;
+    }
+    .resumo-produtos {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .item-resumo {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px;
+      background: #f8fafc;
+    }
+    .item-resumo img {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .item-resumo-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .item-resumo-info span {
+      font-size: 0.95rem;
+    }
+    .item-resumo-preco {
+      font-weight: 700;
+      color: #be123c;
+    }
+    .total-compra {
+      margin-top: 12px;
+      text-align: right;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .campo {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .campo label {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .campo input[type="password"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      font-size: 0.95rem;
+    }
+    .opcoes {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .opcao {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+    .opcao input {
+      accent-color: #be123c;
+      transform: scale(1.1);
+    }
+    .opcao strong {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .opcao small {
+      color: #6b7280;
+    }
+    .btn-confirmar {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #be123c 0%, #e11d48 100%);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    .btn-confirmar:hover {
+      opacity: 0.95;
+    }
+    .campo-cupom {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+      margin-bottom: 16px;
+    }
+    .campo-cupom label {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .campo-cupom input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      font-size: 0.95rem;
+    }
+    .campo-cupom-acao {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-aplicar-cupom {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #fda4af, #fb7185);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .btn-aplicar-cupom:hover {
+      transform: translateY(-1px);
+    }
+    .cupom-resultado {
+      color: #047857;
+      font-size: 0.95rem;
+      min-height: 1.2rem;
+    }
+    .cupom-lista-aplicados {
+      display: grid;
+      gap: 10px;
+      padding: 10px 0;
+    }
+    .cupom-aplicado-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      background: #fdf2f8;
+      border: 1px solid #fbcfe8;
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: #701a75;
+      font-size: 0.95rem;
+    }
+    .cupom-aplicado-item strong {
+      font-weight: 700;
+    }
+    .cupom-aplicado-info {
+      min-width: 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: hidden;
+    }
+    .cupom-aplicado-info span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #6b0e4a;
+    }
+    .btn-remover-cupom-compra {
+      border: none;
+      border-radius: 14px;
+      background: #fda4af;
+      color: #fff;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn-remover-cupom-compra:hover {
+      transform: translateY(-1px);
+      background: #fb7185;
+    }
+    .mensagem {
+      padding: 24px;
+      background: #fdf2f8;
+      border: 1px solid #fbcfe8;
+      border-radius: 14px;
+      color: #9d174d;
+      line-height: 1.6;
+    }
+    .footer {
+      padding: 20px 32px;
+      background: #ffffff;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #6b7280;
+    }
+    @media (max-width: 1100px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="pageLoadSpinner" class="page-load-spinner">
+    <div class="loader-brand">
+      <div class="loader-spinner">
+        <div class="loader-line"></div>
+      </div>
+      <img src="./images/icon site.png" alt="Stephany's Cosméticos" class="loader-logo">
+      <div class="loader-text">Stephany's Cosméticos carregando<span class="loader-dots"><span>.</span><span>.</span><span>.</span></span></div>
+      <div class="loader-bar">
+        <div class="loader-bar-segments">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page">
+    <header class="header">
+      <!-- NAVEGAÇÃO -->
+      <nav class="nav-global" style="position: absolute; top: 0; left: 0; right: 0; margin: 0;">
+        <a class="nav-brand" onclick="window.location.href='index.html'">Stephany's Cosméticos</a>
+        <ul class="nav-links">
+          <li><a href="index.html">🏠 Home</a></li>
+          <li><a href="compra.html" class="ativo">🛒 Compra</a></li>
+          <li><a href="favoritos.html">❤️ Favoritos</a></li>
+          <li><a href="filtros.html">🔍 Filtros</a></li>
+        </ul>
+      </nav>
+      <h1 style="margin-top: 60px;">Finalizar Compra</h1>
+      <button class="btn-voltar" onclick="voltarParaLoja()">Voltar à loja</button>
+    </header>
+
+    <main class="content">
+      <section class="section">
+        <h2>Resumo da Compra</h2>
+        <div id="resumoProdutos" class="resumo-produtos"></div>
+        <div id="totalCompra" class="total-compra">Total: R$ 0,00</div>
+      <div class="campo campo-cupom">
+        <label for="codigoCupom">Código de desconto</label>
+        <div class="campo-cupom-acao">
+          <input type="text" id="codigoCupom" placeholder="Insira o código de desconto">
+          <button class="btn-aplicar-cupom" type="button" onclick="aplicarCupom()">Aplicar cupom</button>
+        </div>
+        <div id="statusCupom" class="cupom-resultado"></div>
+        <div id="listaCuponsAplicados" class="cupom-lista-aplicados"></div>
+      </div>
+      <section class="section">
+        <h2>Confirmação</h2>
+        <div id="selecaoEnderecoCompra" class="campo" style="display:none;">
+          <label>Selecione o Endereço de Entrega</label>
+          <div id="opcoesEnderecos" class="opcoes"></div>
+        </div>
+        <div class="campo">
+          <label>Forma de pagamento</label>
+          <div id="selecaoPagamento" class="opcoes"></div>
+        </div>
+        <div id="campoSenhaCompra" class="campo" style="display:none;">
+          <label for="senhaCompra">Confirme sua senha</label>
+          <input type="password" id="senhaCompra" placeholder="Digite sua senha">
+        </div>
+        <button id="btnConfirmarCompra" class="btn-confirmar" onclick="confirmarCompra()" style="display:none;">Confirmar Compra</button>
+        <button class="btn-voltar" style="margin-top: 10px;" onclick="voltarParaLoja()">Cancelar</button>
+        <div id="mensagemAviso" class="mensagem" style="display:none;"></div>
+      </section>
+    </main>
+    <footer class="footer">Ao finalizar, sua compra será confirmada e seu carrinho esvaziado.</footer>
+  </div>
+
+  <script>
+    function voltarParaLoja() {
+      window.location.href = 'index.html';
+    }
+
+    const codigosCupom = {
+      PRIMEIRA10: { tipo: 'percent', valor: 10, descricao: '10% de desconto no total.' },
+      BELEZA15: { tipo: 'percent', valor: 15, min: 150, descricao: '15% de desconto em compras acima de R$ 150.' },
+      FRETEGRATIS: { tipo: 'valor', valor: 20, descricao: 'R$ 20 de desconto + frete grátis.' }
+    };
+
+    let cuponsAplicados = [];
+
+    function parsePreco(preco) {
+      if (typeof preco === 'number') return preco;
+      if (typeof preco !== 'string') return Number(preco) || 0;
+      return parseFloat(preco.replace(/[R$\s\.]/g, '').replace(',', '.')) || 0;
+    }
+
+    function aplicarCupom() {
+      const codigo = document.getElementById('codigoCupom').value.trim().toUpperCase();
+      const statusCupom = document.getElementById('statusCupom');
+
+      if (!codigo) {
+        statusCupom.textContent = 'Digite um código de desconto.';
+        statusCupom.style.color = '#be123c';
+        return;
+      }
+
+      const cupom = codigosCupom[codigo];
+      if (!cupom) {
+        statusCupom.textContent = 'Código inválido. Tente PRIMEIRA10, BELEZA15 ou FRETEGRATIS.';
+        statusCupom.style.color = '#be123c';
+        return;
+      }
+
+      const carrinhoTempSessao = JSON.parse(sessionStorage.getItem('carrinhoTemp')) || [];
+      const carrinhoLocal = JSON.parse(localStorage.getItem('carrinho')) || [];
+      const carrinhoTemp = carrinhoTempSessao.length > 0 ? carrinhoTempSessao : carrinhoLocal;
+      const totalSemDesconto = carrinhoTemp.reduce((acum, item) => acum + parsePreco(item.preco) * (item.quantidade || 1), 0);
+
+      if (cupom.min && totalSemDesconto < cupom.min) {
+        statusCupom.textContent = `Este cupom exige valor mínimo de R$ ${cupom.min.toFixed(2)}.`;
+        statusCupom.style.color = '#be123c';
+        return;
+      }
+
+      if (cuponsAplicados.some(item => item.codigo === codigo)) {
+        statusCupom.textContent = `Cupom ${codigo} já está aplicado.`;
+        statusCupom.style.color = '#be123c';
+        return;
+      }
+
+      cuponsAplicados.push({ codigo, ...cupom });
+      localStorage.setItem('cuponsAplicados', JSON.stringify(cuponsAplicados));
+      adicionarCupomEnviadoPopup(codigo);
+      statusCupom.textContent = `Cupom ${codigo} aplicado: ${cupom.descricao}`;
+      statusCupom.style.color = '#047857';
+      document.getElementById('codigoCupom').value = '';
+      atualizarListaCupons();
+      carregarCheckout();
+    }
+
+    function carregarCuponsAplicados() {
+      const data = localStorage.getItem('cuponsAplicados');
+      if (!data) return;
+      try {
+        cuponsAplicados = JSON.parse(data) || [];
+      } catch (e) {
+        cuponsAplicados = [];
+      }
+    }
+
+    function obterParametroUrl(nome) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(nome);
+    }
+
+    function aplicarCupomDaUrl() {
+      const codigo = obterParametroUrl('cupom');
+      if (!codigo) return;
+      const codigoUpper = codigo.toUpperCase();
+      const cupom = codigosCupom[codigoUpper];
+      if (!cupom) return;
+      if (cuponsAplicados.some(item => item.codigo === codigoUpper)) return;
+
+      cuponsAplicados.push({ codigo: codigoUpper, ...cupom });
+      localStorage.setItem('cuponsAplicados', JSON.stringify(cuponsAplicados));
+      const url = new URL(window.location);
+      url.searchParams.delete('cupom');
+      history.replaceState(null, '', url.toString());
+    }
+
+    function carregarCuponsEnviadosPopup() {
+      const data = localStorage.getItem('cuponsEnviadosPopup');
+      if (!data) return [];
+      try {
+        return JSON.parse(data) || [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function salvarCuponsEnviadosPopup(cupons) {
+      localStorage.setItem('cuponsEnviadosPopup', JSON.stringify(cupons));
+    }
+
+    function adicionarCupomEnviadoPopup(codigo) {
+      const cupons = carregarCuponsEnviadosPopup();
+      if (!cupons.includes(codigo)) {
+        cupons.push(codigo);
+        salvarCuponsEnviadosPopup(cupons);
+      }
+    }
+
+    function removerCupomEnviadoPopup(codigo) {
+      const cupons = carregarCuponsEnviadosPopup().filter(item => item !== codigo);
+      salvarCuponsEnviadosPopup(cupons);
+    }
+
+    function aplicarCuponsEnviadosPopup() {
+      const cupons = carregarCuponsEnviadosPopup();
+      cupons.forEach(codigo => {
+        const codigoUpper = codigo.toUpperCase();
+        const cupom = codigosCupom[codigoUpper];
+        if (!cupom) return;
+        if (cuponsAplicados.some(item => item.codigo === codigoUpper)) return;
+        cuponsAplicados.push({ codigo: codigoUpper, ...cupom });
+      });
+      if (cuponsAplicados.length > 0) {
+        localStorage.setItem('cuponsAplicados', JSON.stringify(cuponsAplicados));
+      }
+    }
+
+    function atualizarListaCupons() {
+      const lista = document.getElementById('listaCuponsAplicados');
+      if (!lista) return;
+      if (cuponsAplicados.length === 0) {
+        lista.style.display = 'none';
+        lista.innerHTML = '';
+        return;
+      }
+
+      lista.style.display = 'grid';
+      lista.innerHTML = cuponsAplicados.map(cupom => `
+        <div class="cupom-aplicado-item">
+          <div class="cupom-aplicado-info">
+            <strong>${cupom.codigo}</strong>
+            <span>${cupom.descricao}</span>
+          </div>
+          <button type="button" class="btn-remover-cupom-compra" onclick="removerCupomAplicado('${cupom.codigo}')">Remover</button>
+        </div>
+      `).join('');
+    }
+
+    function removerCupomAplicado(codigo) {
+      cuponsAplicados = cuponsAplicados.filter(item => item.codigo !== codigo);
+      localStorage.setItem('cuponsAplicados', JSON.stringify(cuponsAplicados));
+      removerCupomEnviadoPopup(codigo);
+      atualizarListaCupons();
+      carregarCheckout();
+    }
+
+    function scrollParaListaCupons() {
+      const lista = document.getElementById('listaCuponsAplicados');
+      if (!lista || cuponsAplicados.length === 0) return;
+      lista.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function atualizarTotalCompra(total) {
+      const statusCupom = document.getElementById('statusCupom');
+      let totalFinal = total;
+      let descontoTotal = 0;
+
+      atualizarListaCupons();
+
+      cuponsAplicados.forEach(cupom => {
+        if (cupom.tipo === 'percent') {
+          const desconto = totalFinal * (cupom.valor / 100);
+          descontoTotal += desconto;
+          totalFinal -= desconto;
+        } else if (cupom.tipo === 'valor') {
+          const desconto = Math.min(cupom.valor, totalFinal);
+          descontoTotal += desconto;
+          totalFinal -= desconto;
+        }
+      });
+
+      totalFinal = Math.max(0, totalFinal);
+      document.getElementById('totalCompra').innerText = descontoTotal > 0
+        ? `Total: R$ ${totalFinal.toFixed(2)} (-R$ ${descontoTotal.toFixed(2)})`
+        : `Total: R$ ${totalFinal.toFixed(2)}`;
+
+      const descontoCompra = document.getElementById('descontoCompra');
+      if (descontoTotal > 0 && descontoCompra) {
+        descontoCompra.style.display = 'block';
+        descontoCompra.textContent = `Desconto aplicado: -R$ ${descontoTotal.toFixed(2)}`;
+      } else if (descontoCompra) {
+        descontoCompra.style.display = 'none';
+        descontoCompra.textContent = '';
+      }
+
+      if (cuponsAplicados.length === 0 && statusCupom.textContent === '') {
+        statusCupom.textContent = '';
+      }
+    }
+
+    function mostrarNotificacao(msg) {
+      const div = document.createElement('div');
+      div.style.position = 'fixed';
+      div.style.top = '20px';
+      div.style.right = '20px';
+      div.style.padding = '16px 20px';
+      div.style.background = '#111827';
+      div.style.color = '#fff';
+      div.style.borderRadius = '12px';
+      div.style.boxShadow = '0 10px 30px rgba(0,0,0,0.12)';
+      div.style.zIndex = '9999';
+      div.textContent = msg;
+      document.body.appendChild(div);
+      setTimeout(() => div.remove(), 3000);
+    }
+
+    function carregarCheckout() {
+      const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+      const carrinhoTempSessao = JSON.parse(sessionStorage.getItem('carrinhoTemp')) || [];
+      const carrinhoLocal = JSON.parse(localStorage.getItem('carrinho')) || [];
+      const carrinhoTemp = carrinhoTempSessao.length > 0 ? carrinhoTempSessao : carrinhoLocal;
+      const resumoProdutos = document.getElementById('resumoProdutos');
+      const selecaoPagamento = document.getElementById('selecaoPagamento');
+      const selecaoEnderecoCompra = document.getElementById('selecaoEnderecoCompra');
+      const opcoesEnderecos = document.getElementById('opcoesEnderecos');
+      const mensagemAviso = document.getElementById('mensagemAviso');
+
+      if (!usuario) {
+        mostrarNotificacao('Você precisa estar logado para finalizar a compra.');
+        return voltarParaLoja();
+      }
+
+      if (!carrinhoTemp || carrinhoTemp.length === 0) {
+        mensagemAviso.style.display = 'block';
+        mensagemAviso.textContent = 'Seu carrinho está vazio. Volte à loja e adicione produtos antes de finalizar.';
+        return;
+      }
+
+      resumoProdutos.innerHTML = '';
+      let total = 0;
+      carrinhoTemp.forEach(item => {
+        const precoUnitario = parsePreco(item.preco);
+        const linhaTotal = precoUnitario * (item.quantidade || 1);
+        total += linhaTotal;
+        resumoProdutos.innerHTML += `
+          <div class="item-resumo">
+            <img src="${item.imagem || 'https://via.placeholder.com/80'}" alt="${item.nome}">
+            <div class="item-resumo-info">
+              <strong>${item.nome}</strong>
+              <span>Quantidade: ${item.quantidade || 1}</span>
+              <span class="item-resumo-preco">R$ ${linhaTotal.toFixed(2)}</span>
+            </div>
+          </div>
+        `;
+      });
+      atualizarTotalCompra(total);
+      if (cuponsAplicados.length > 0) {
+        scrollParaListaCupons();
+      }
+
+      const enderecos = usuario.enderecos || [];
+
+      if (enderecos.length > 0) {
+        selecaoEnderecoCompra.style.display = 'block';
+        opcoesEnderecos.innerHTML = '';
+        enderecos.forEach((endereco, index) => {
+          opcoesEnderecos.innerHTML += `
+            <label class="opcao">
+              <input type="radio" name="endereco" value="${index}">
+              <div>
+                <strong>${endereco.nome}</strong>
+                <small>${endereco.rua}</small>
+              </div>
+            </label>
+          `;
+        });
+      } else {
+        selecaoEnderecoCompra.style.display = 'none';
+        mensagemAviso.style.display = 'block';
+        mensagemAviso.textContent = 'Você não possui endereços cadastrados. Adicione um endereço em suas configurações antes de finalizar a compra.';
+        return;
+      }
+
+      if (!usuario.metodosPagamento || usuario.metodosPagamento.length === 0) {
+        selecaoPagamento.innerHTML = '<div class="mensagem">Você não possui métodos de pagamento cadastrados. Volte à loja e adicione um método em suas configurações.</div>';
+        document.getElementById('mensagemAviso').style.display = 'none';
+        return;
+      }
+
+      selecaoPagamento.innerHTML = '';
+      usuario.metodosPagamento.forEach((metodo, index) => {
+        let titulo = '';
+        let descricao = '';
+        if (metodo.tipo === 'credito') {
+          titulo = 'Cartão de Crédito';
+          descricao = `**** **** **** ${metodo.numero.slice(-4)}`;
+        } else if (metodo.tipo === 'debito') {
+          titulo = 'Cartão de Débito';
+          descricao = `**** **** **** ${metodo.numero.slice(-4)}`;
+        } else if (metodo.tipo === 'pix') {
+          titulo = 'Pix';
+          descricao = metodo.chave;
+        }
+        selecaoPagamento.innerHTML += `
+          <label class="opcao">
+            <input type="radio" name="formaCompra" value="${index}" onchange="mostrarCampoSenha()">
+            <div>
+              <strong>${titulo}</strong>
+              <small>${descricao}</small>
+            </div>
+          </label>
+        `;
+      });
+
+      if (enderecos.length === 1) {
+        const primeiraOpcao = document.querySelector('input[name="endereco"]');
+        if (primeiraOpcao) {
+          primeiraOpcao.checked = true;
+        }
+      }
+    }
+
+    function mostrarCampoSenha() {
+      document.getElementById('campoSenhaCompra').style.display = 'flex';
+      document.getElementById('btnConfirmarCompra').style.display = 'block';
+    }
+
+    function confirmarCompra() {
+      const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+      const enderecoSelecionado = document.querySelector('input[name="endereco"]:checked');
+      const formaSelecionada = document.querySelector('input[name="formaCompra"]:checked');
+      const senha = document.getElementById('senhaCompra').value;
+
+      if (!usuario) {
+        mostrarNotificacao('Você precisa estar logado para confirmar a compra.');
+        return voltarParaLoja();
+      }
+
+      if (document.getElementById('selecaoEnderecoCompra').style.display === 'block' && !enderecoSelecionado) {
+        mostrarNotificacao('Selecione um endereço de entrega!');
+        return;
+      }
+      if (!formaSelecionada) {
+        mostrarNotificacao('Selecione uma forma de pagamento!');
+        return;
+      }
+      if (!senha) {
+        mostrarNotificacao('Digite sua senha para confirmar!');
+        return;
+      }
+      if (senha !== usuario.senha) {
+        mostrarNotificacao('Senha incorreta!');
+        return;
+      }
+
+      sessionStorage.removeItem('carrinhoTemp');
+      localStorage.removeItem('carrinho');
+      localStorage.removeItem('cuponsAplicados');
+      mostrarNotificacao('Compra realizada com sucesso! Obrigado pela preferência.');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1200);
+    }
+
+    window.addEventListener('load', function() {
+      carregarCuponsAplicados();
+      aplicarCuponsEnviadosPopup();
+      aplicarCupomDaUrl();
+      carregarCheckout();
+      setTimeout(() => {
+        esconderSpinnerDeCarregamento();
+      }, 2500);
+    });
+
+    function esconderSpinnerDeCarregamento() {
+      const spinner = document.getElementById('pageLoadSpinner');
+      if (!spinner) return;
+      spinner.classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

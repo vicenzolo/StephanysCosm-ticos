@@ -1,14 +1,144 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=4.0">
+
   <title>Meus Favoritos</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+    }
+
+    /* SPINNER DE CARREGAMENTO */
+    .page-load-spinner {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(254, 241, 245, 0.95);
+      z-index: 2000;
+      transition: opacity 4s ease, visibility 0s ease 4s;
+    }
+
+    .page-load-spinner.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-brand {
+      text-align: center;
+      position: relative;
+    }
+
+    .loader-logo {
+      width: 140px;
+      max-width: 100%;
+      animation: pulse-logo 1.4s ease-in-out infinite;
+      filter: drop-shadow(0 12px 30px rgba(199, 34, 85, 0.16));
+      position: relative;
+      z-index: 2;
+    }
+
+    .loader-spinner {
+      position: absolute;
+      top: 41%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 240px;
+      height: 240px;
+      z-index: 1;
+    }
+
+    .loader-line {
+      position: absolute;
+      top: 38%;
+      left: 50%;
+      width: 180px;
+      height: 180px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border-top: 10px solid rgba(255,255,255,0.95);
+      border-right: 10px solid rgba(251,113,133,0.95);
+      border-bottom: 10px solid transparent;
+      border-left: 10px solid transparent;
+      box-shadow: 0 0 18px rgba(251,113,133,0.35), inset 0 0 12px rgba(255,255,255,0.55);
+      animation: spinner 1.2s linear infinite;
+    }
+
+    .loader-line::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: transparent;
+      opacity: 0.4;
+      filter: blur(6px);
+    }
+
+    @keyframes spinner {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes pulse-logo {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .loader-text {
+      margin-top: 18px;
+      color: #9f2f5e;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+    }
+
+    .loader-bar {
+      width: 260px;
+      max-width: 90vw;
+      margin: 16px auto 0;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(251, 113, 133, 0.22);
+      box-shadow: inset 0 1px 12px rgba(255, 255, 255, 0.56), inset 0 0 16px rgba(251, 113, 133, 0.18);
+    }
+
+    .loader-bar-segments {
+      display: flex;
+      gap: 6px;
+    }
+
+    .loader-bar-segments span {
+      flex: 1;
+      min-width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(251, 113, 133, 0.95);
+      opacity: 1;
+      animation: loader-bar-segment 1.4s ease-in-out infinite;
+      box-shadow: 0 0 8px rgba(251, 113, 133, 0.25);
+    }
+
+    .loader-bar-segments span:nth-child(1) { animation-delay: 0s; }
+    .loader-bar-segments span:nth-child(2) { animation-delay: 0.1s; }
+    .loader-bar-segments span:nth-child(3) { animation-delay: 0.2s; }
+    .loader-bar-segments span:nth-child(4) { animation-delay: 0.3s; }
+    .loader-bar-segments span:nth-child(5) { animation-delay: 0.4s; }
+    .loader-bar-segments span:nth-child(6) { animation-delay: 0.5s; }
+    .loader-bar-segments span:nth-child(7) { animation-delay: 0.6s; }
+    .loader-bar-segments span:nth-child(8) { animation-delay: 0.7s; }
+    .loader-bar-segments span:nth-child(9) { animation-delay: 0.8s; }
+    .loader-bar-segments span:nth-child(10) { animation-delay: 0.9s; }
+
+    @keyframes loader-bar-segment {
+      0%, 100% { opacity: 0.25; }
+      50% { opacity: 1; }
     }
 
     /* NAVEGAÇÃO GLOBAL */
@@ -948,6 +1078,22 @@
   </style>
 </head>
 <body>
+  <!-- SPINNER DE CARREGAMENTO -->
+  <div id="pageLoadSpinner" class="page-load-spinner">
+    <div class="loader-brand">
+      <div class="loader-spinner">
+        <div class="loader-line"></div>
+      </div>
+      <img src="./images/icon site.png" alt="Stephany's Cosméticos" class="loader-logo">
+      <div class="loader-text">Stephany's Cosméticos carregando<span class="loader-dots"><span>.</span><span>.</span><span>.</span></span></div>
+      <div class="loader-bar">
+        <div class="loader-bar-segments">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- NAVEGAÇÃO -->
   <nav class="nav-global">
     <a class="nav-brand" onclick="window.location.href='index.html'">Stephany's Cosméticos</a>
@@ -1075,7 +1221,7 @@
         {
           nome: 'Royal Batom Attraction',
           preco: '40,89',
-          descricao: 'Batom 💄 de alta qualidade, resistente à água 💧 e ao atrito. Proporciona cor intensa ✨, longa duração e lábios impecáveis 💖.',
+          descricao: '💄 Batom matte com cor intensa ✨ e acabamento impecável 💖 Fórmula resistente de longa duração ⏰ que mantém os lábios lindos o dia todo 🌸 Textura confortável 🎀 efeito aveludado 💋 e pigmentação forte 👑.',
           imagem: './images/batom.png',
           alt: 'Royal Batom Attraction',
           categorias: ['Rosto', 'Maquiagem'],
@@ -1085,8 +1231,8 @@
         {
           nome: 'Sérum Facial revitalizante Gold',
           preco: '256,90',
-          descricao: 'Sérum anti-oleosidade 💧 e acne ✨, feito com ingredientes naturais 🌿. Revitaliza a pele 💖 e promove uma limpeza profunda e eficaz 🧼.',
-          imagem: './images/Sérum banner venda-1.png',
+          descricao: '✨ Sérum facial com toque leve 🌿 e hidratação profunda 💖 Fórmula revitalizante 🌱 que ajuda a controlar a oleosidade 💧 e suavizar imperfeições 🌸 Pele mais macia 🎀 iluminada 💎 e renovada diariamente 👑',
+          imagem: './images/Sérum venda-1.png',
           alt: 'Sérum Facial revitalizante Gold',
           categorias: ['Rosto'],
           selo: false,
@@ -1094,9 +1240,9 @@
         },
         {
           nome: 'Perfume Luxo Confiance',
-          preco: '587,90',
-          descricao: 'Perfume com fragrância exclusiva 💎 da marca, com durabilidade prolongada e irresistível 😍. Use e sinta-se empoderada 👑.',
-          imagem: './images/perfume banner venda -1.png',
+          preco: '487,90',
+          descricao: ' 🌸 Fragrância marcante com notas florais 🌷 delicadas 💖 Aroma envolvente 👑 e fixação prolongada 💎 que acompanha você o dia inteiro ⏰ Sensação sofisticada 🎀 perfeita para ocasiões especiais ✨',
+          imagem: './images/Perfume venda -2.png',
           alt: 'Perfume Luxo Confiance',
           categorias: ['Perfumaria'],
           estrelas: '★★★★★',
@@ -1107,8 +1253,8 @@
         {
           nome: 'glós Velvet Cover brilhius',
           preco: '89,90',
-          descricao: 'Gloss de alta qualidade com brilho✨, hidrata e deixa os lábios macios e volumosos. Leve, confortável e perfeito para usar com estilo 💖.',
-          imagem: './images/glos banner venda -1.png',
+          descricao: '💫 Gloss 👄 veludo com efeito 🪞 espelho e volume instantâneo! Textura 💧 macia que hidrata 🌸 profundamente, sem grudar. Brilho ✨ espetacular que dura horas - perfeito 💕 para qualquer ocasião.',
+          imagem: './images/glos venda -1.png',
           alt: 'glós Velvet Cover brilhius',
           categorias: ['Rosto', 'Maquiagem'],
           estrelas: '★★★★★',
@@ -1119,8 +1265,8 @@
         {
           nome: 'Pó Facial Royal glass fort',
           preco: '58,90',
-          descricao: 'Pó facial de alta qualidade 💎, com acabamento natural 🌿 e longa duração. Ideal para um look ✨ perfeito e duradouro 💖.',
-          imagem: './images/Pó banner venda -1.png',
+          descricao: '🌬️ Pó translúcido com acabamento suave e efeito natural 💖 Controla a oleosidade 🌟 sem marcar a pele 💎 Textura leve 🎀 confortável e perfeita para manter a maquiagem 🎨 impecável ⏰.',
+          imagem: './images/Pó venda -1.png',
           alt: 'Pó Facial Royal glass fort',
           categorias: ['Rosto', 'Maquiagem'],
           estrelas: '★★★★★',
@@ -1130,9 +1276,9 @@
         },
         {
           nome: 'Sabonete Líquido Elegance',
-          preco: '15,90',
-          descricao: 'Sabonete líquido para limpeza profunda e suave',
-          imagem: './images/Sabonete liquido banner venda -1.png',
+          preco: '79,90',
+          descricao: '🧼 Sabonete líquido 🧴 com espuma cremosa e fragrância delicada 🌸 Limpeza suave 💧 que deixa a pele macia 🎀 hidratada e perfumada 💖 Sensação refrescante 🫧 perfeita para a elegância do dia a dia 👑.',
+          imagem: './images/Sabonete liquido venda -1.png',
           alt: 'Sabonete Líquido Elegance',
           categorias: ['Corpo'],
           estrelas: '★★★★★',
@@ -1141,77 +1287,149 @@
           id: 6
         },
         {
-          nome: 'Body Splash',
-          preco: '34,90',
-          descricao: 'Body splash refrescante com fragrância duradoura',
-          imagem: './images/Body splash banner venda -1.png',
-          alt: 'Body Splash',
-          categorias: ['Corpo'],
+          nome: 'Protetor Solar Radiance',
+          preco: '97,90',
+          descricao: '☀️ Protetor solar FPS 50+ ✨ com textura leve e toque sequinho 💖 Proteção UVA/UVB 🛡️ que ajuda a cuidar da pele diariamente 🌸 Acabamento natural 💧 confortável e ideal para todos os momentos 👑.',
+          imagem: './images/protetor solar venda -1.png',
+          alt: 'Protetor Solar Radiance',
+          categorias: ['Rosto', 'Corpo'],
           estrelas: '★★★★★',
-          avaliacoes: 112,
+          avaliacoes: 134,
           selo: false,
           id: 7
         },
         {
-          nome: 'Kit Maquiagem',
-          preco: '149,90',
-          descricao: 'Kit completo de maquiagem profissional',
-          imagem: './images/kit maquiagem slider -1.png',
-          alt: 'Kit Maquiagem',
-          categorias: ['Rosto', 'Maquiagem'],
+          nome: 'Body Splash refreshment',
+          preco: '234,00',
+          descricao: '🍓 Body splash com fragrância leve e refrescante 🌸 Aroma delicado 💖 que perfuma suavemente a pele 🎀 Sensação refrescante 💧 secagem rápida 🌟 e toque confortável para o dia todo 👑.',
+          imagem: './images/Body splash venda -1.png',
+          alt: 'Body Splash refreshment',
+          categorias: ['Corpo', 'Perfumaria'],
           estrelas: '★★★★★',
-          avaliacoes: 178,
-          selo: false,
+          avaliacoes: 112,
+          selo: true,
           id: 8
         },
         {
-          nome: 'Creme Corporal',
-          preco: '39,90',
-          descricao: 'Creme hidratante para pele seca e ressecada',
-          imagem: './images/creme corporal banner venda -1.png',
-          alt: 'Creme Corporal',
-          categorias: ['Corpo'],
-          estrelas: '★★★★★',
-          avaliacoes: 145,
-          selo: false,
-          id: 9
-        },
-        {
-          nome: 'Esfoliante Corporal',
-          preco: '24,90',
-          descricao: 'Esfoliante natural para renovação celular',
-          imagem: './images/Esfoliante corporal banner venda -1.png',
-          alt: 'Esfoliante Corporal',
+          nome: 'Esfoliante Corporal Esfólyus',
+          preco: '86,67',
+          descricao: '🧖 Esfoliante 🌿 corporal com grânulos naturais 🧴 e óleos essenciais! Remove ✨ células mortas suavemente, deixando 💧 a pele macia e radiante 🌸. Ideal pós-depilação sem irritar 💕.',
+          imagem: './images/Esfoliante venda -1.png',
+          alt: 'Esfoliante Corporal Esfólyus',
           categorias: ['Corpo'],
           estrelas: '★★★★★',
           avaliacoes: 83,
-          selo: false,
-          id: 10
+          selo: true,
+          id: 9
         },
         {
-          nome: 'Shampoo',
-          preco: '22,90',
-          descricao: 'Shampoo nutritivo para cabelos danificados',
+          nome: 'Shampoo Revitalizante vival',
+          preco: '188,90',
+          descricao: '🧴 Shampoo revitalizante ✨ com fórmula nutritiva e toque suave 💖 Ajuda a fortalecer os fios 🌿 enquanto proporciona brilho intenso 🌟 Espuma cremosa 🎀 sensação refrescante 💧 e cabelos mais macios 🪶',
           imagem: './images/shampoo venda -1.png',
-          alt: 'Shampoo',
+          alt: 'Shampoo Revitalizante vival',
           categorias: ['Cabelos'],
           estrelas: '★★★★★',
           avaliacoes: 96,
-          selo: false,
+          selo: true,
+          id: 10
+        },
+        {
+          nome: 'Creme Corporal Hidratante',
+          preco: '101,90',
+          descricao: '🧴 Creme corporal ✨ com manteiga de Karité 🥑 e absorção rápida ✨ Nutrição intensa 🌿 que ajuda a restaurar o brilho natural da pele 💧 Toque sedoso 🌸 perfume envolvente 🎀 e sensação de cuidado prolongado 👑.',
+          imagem: './images/creme corporal venda -1.png',
+          alt: 'Creme Corporal Hidratante',
+          categorias: ['Corpo'],
+          estrelas: '★★★★★',
+          avaliacoes: 201,
+          selo: true,
           id: 11
         },
         {
-          nome: 'Protetor Solar',
-          preco: '45,90',
-          descricao: 'Protetor solar FPS 50 para proteção máxima',
-          imagem: './images/protetor solar banner venda -1.png',
-          alt: 'Protetor Solar',
-          categorias: ['Corpo'],
+          nome: 'Perfume Floral Premium',
+          preco: '218,99',
+          descricao: '✨ Perfume floral 🌹 com essência marcante e toque refinado 👑 Notas delicadas de jasmim 🌸 e rosa envolvem a pele com um aroma elegante 💖 Fixação prolongada ⏰ e presença irresistível em cada borrifada 💎.',
+          imagem: './images/perfume venda -1.png',
+          alt: 'Perfume Floral Premium',
+          categorias: ['Perfumaria'],
           estrelas: '★★★★★',
-          avaliacoes: 134,
-          selo: false,
+          avaliacoes: 201,
+          selo: true,
           id: 12
-        }
+        },
+        {
+          nome: 'Precision Eyeliner Black',
+          preco: '118,99',
+          descricao: '👁️ Delineador com ponta precisa ✏️ e pigmentação intensa 🖤 Desliza facilmente 🎯 criando traços definidos e elegantes 💖 Fórmula resistente 💧 de longa duração ⏰ para um olhar marcante o dia inteiro 👑',
+          imagem: './images/Lapíz venda -1.png',
+          alt: 'Precision Eyeliner Black',
+          categorias: ['Rosto', 'Maquiagem'],
+          estrelas: '★★★★★',
+          avaliacoes: 167,
+          selo: true,
+          id: 13
+        },
+        {
+          nome: 'Hair Oil Nutritive Forts Gold',
+          preco: '434,99',
+          descricao: '✨ Óleo 💛 capilar 24K com partículas de Ouro que sela 🔐 as cutículas e potencializa 🌟 o brilho! Reduz frizz 💨 instantaneamente e protege 🔥 do calor até 230°C. Fios sedosos 👑 e macios o dia todo.⏰.',
+          imagem: './images/Óleo venda -1.png',
+          alt: 'Hair Oil Nutritive Forts Gold',
+          categorias: ['Cabelos'],
+          estrelas: '★★★★★',
+          avaliacoes: 167,
+          selo: false,
+          id: 14
+        },
+        {
+          nome: 'Conditioner Hidra Silk Dominiun',
+          preco: '239,99',
+          descricao: '💆‍♀️ Condicionador 🧴 com hidratação intensa ✨ e toque sedoso nos fios 💖 Fórmula leve 🌬️ que deixa o cabelo mais macio 🪶 alinhado 🌟 e com brilho radiante como uma Hidra🐉',
+          imagem: './images/Condicionador venda -1.png',
+          alt: 'Conditioner Hidra Silk Dominiun',
+          categorias: ['Cabelos'],
+          estrelas: '★★★★★',
+          avaliacoes: 145,
+          selo: false,
+          id: 15
+        },
+        {
+          nome: 'Hair Mask Repair Dimond',
+          preco: '682,11',
+          descricao: '✨ Máscara premium Dimond 🧴 com nutrição intensa e toque restaurador 💖 Ajuda a fortalecer os fios 💪 devolvendo brilho radiante 🌟 e deixando o cabelo sedoso 👑 saudável e cheio de vida ✨',
+          imagem: './images/Creme mask Dimond.png',
+          alt: 'Hair Mask Repair Dimond',
+          categorias: ['Cabelos'],
+          estrelas: '★★★★★',
+          avaliacoes: 178,
+          selo: false,
+          id: 16
+        },
+        {
+          nome: 'Glamour Eau de Perfum',
+          preco: '1522,99',
+          descricao: '👑 Fragrância sofisticada e envolvente com alta fixação! 🌸✨ Notas florais delicadas que revelam elegância e glamour ao longo do dia 💖 deixando uma presença marcante e irresistível 💎',
+          imagem: './images/perfume venda -3.png',
+          alt: 'Glamour Eau de Perfum',
+          categorias: ['Perfumaria'],
+          estrelas: '★★★★★',
+          avaliacoes: 201,
+          selo: true,
+          id: 17
+        },
+      {
+          nome: 'Paleta de Cor Rosé Dream',
+          preco: '875,43',
+          descricao: '👑 paleta perfeita para criar makes sofisticadas e iluminadas 💖 Com tons rosados 🌸 elegantes e partículas de brilho intenso ✨ sua textura macia entrega um acabamento aveludado 🎀 na aplicação 💕.',
+          imagem: './images/paleta de cor venda -1.png',
+          alt: 'Paleta de Cor Rosé Dream',
+          categorias: ['Rosto', 'Maquiagem'],
+          estrelas: '★★★★★',
+          avaliacoes: 94,
+          selo: true,
+          id: 18
+        },
       ];
     }
 
@@ -1232,21 +1450,39 @@
         return;
       }
 
-      grid.innerHTML = favoritosFiltrados.map(produto => `
-        <div class="card" data-id="${produto.id}">
-          ${produto.selo ? '<button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>' : ''}
-          <button class="btn-favorito ativo" onclick="toggleFavorito('${produto.nome}', event)" title="Remover dos favoritos">❤️</button>
-          <img src="${produto.imagem}" alt="${produto.alt}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zNWVtIiBmaWxsPSIjOUI5QkE0IiBmb250LXNpemU9IjE0Ij5TZW0gSW1hZ2VtPC90ZXh0Pgo8L3N2Zz4='">
-          <div style="margin-bottom: 8px;">
-            ${produto.categorias.map(cat => `<span class="categoria-tag">${cat}</span>`).join('')}
+      grid.innerHTML = favoritosFiltrados.map(produto => {
+        const { media, total } = calcularMediaEstrelas(produto.nome);
+        const estrelasHTML = gerarEstrelasVisuais(media);
+        return `
+          <div class="card" data-id="${produto.id}">
+            ${produto.selo ? '<button class="selo" onclick="irParaMaisVendidos()">Mais vendidos</button>' : ''}
+            <button class="btn-favorito ativo" onclick="toggleFavorito('${produto.nome}', event)" title="Remover dos favoritos">❤️</button>
+            <img src="${produto.imagem}" alt="${produto.alt}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zNWVtIiBmaWxsPSIjOUI5QkE0IiBmb250LXNpemU9IjE0Ij5TZW0gSW1hZ2VtPC90ZXh0Pgo8L3N2Zz4='">
+            <div style="margin-bottom: 8px;">
+              ${produto.categorias.map(cat => `<span class="categoria-tag">${cat}</span>`).join('')}
+            </div>
+            <h3>${produto.nome}</h3>
+            <p>${produto.descricao}</p>
+            <div class="stars">
+              <span>${estrelasHTML}</span>
+              <span class="stars-count">(${total})</span>
+            </div>
+            <p class="preco">R$ ${produto.preco}</p>
+            <button class="botao" onclick="adicionarAoCarrinho('${produto.nome}', this)">Adicionar ao Carrinho</button>
           </div>
-          <h3>${produto.nome}</h3>
-          <p>${produto.descricao}</p>
-          <p class="preco">R$ ${produto.preco}</p>
-          <button class="botao" onclick="adicionarAoCarrinho('${produto.nome}', this)">Adicionar ao Carrinho</button>
-        </div>
-      `).join('');
-      reconectarEventosCards();
+        `;
+      }).join('');
+
+      // Adicionar event listeners aos cards para abrir o painel de detalhes
+      document.querySelectorAll('#favoritosGrid .card').forEach(card => {
+        card.addEventListener('click', function(event) {
+          if (event.target.closest('.btn-favorito') || event.target.closest('.selo') || event.target.closest('.botao')) {
+            return;
+          }
+          const produtoNome = this.querySelector('h3').textContent;
+          mostrarDetalhesProduto(produtoNome);
+        });
+      });
     }
 
     function parsePreco(preco) {
@@ -1292,14 +1528,16 @@
     function toggleFavorito(produtoNome, event) {
       event.preventDefault();
       event.stopPropagation();
+      const produto = produtos.find(p => p.nome === produtoNome);
+      const imagemSrc = produto ? produto.imagem : '';
       const index = favoritos.indexOf(produtoNome);
 
       if (index > -1) {
         favoritos.splice(index, 1);
-        mostrarNotificacao('Removido dos favoritos');
+        mostrarNotificacaoProduto(imagemSrc, produtoNome, 'Removido dos favoritos');
       } else {
         favoritos.push(produtoNome);
-        mostrarNotificacao('Adicionado aos favoritos');
+        mostrarNotificacaoProduto(imagemSrc, produtoNome, 'Adicionado aos favoritos!');
       }
 
       localStorage.setItem('favoritos', JSON.stringify(favoritos));
@@ -1338,45 +1576,40 @@
       fecharDetalhesProduto();
     }
 
-    function mostrarDetalhesProduto(element) {
-      const card = element.closest('.card') || element;
-      const nome = card.querySelector('h3') ? card.querySelector('h3').textContent : '';
-      const imagem = card.querySelector('img');
-      const descricao = card.querySelector('p') ? card.querySelector('p').textContent : '';
-      const precoTexto = card.querySelector('.preco') ? card.querySelector('.preco').textContent : '';
-      const tags = Array.from(card.querySelectorAll('.categoria-tag')).map(tag => tag.textContent);
+    function mostrarDetalhesProduto(produtoNome) {
+      const produto = produtos.find(p => p.nome === produtoNome);
+      if (!produto) return;
+
       const painel = document.getElementById('painelDetalhesProduto');
+      const { media, total } = calcularMediaEstrelas(produto.nome);
+      const estrelasHTML = gerarEstrelasVisuais(media);
 
       detalheQuantidade = 1;
-      detalhePrecoUnitario = parseFloat(precoTexto.replace(/[R$\s\.]/g, '').replace(',', '.')) || 0;
-      atualizarDetalhesProduto();
+      detalhePrecoUnitario = parsePreco(produto.preco);
 
-      if (painel) {
-        painel.querySelector('.detalhes-imagem img').src = imagem ? imagem.src : '';
-        painel.querySelector('.detalhes-imagem img').alt = imagem ? imagem.alt : nome;
-        painel.querySelector('.detalhes-nome').textContent = nome;
-        painel.querySelector('.detalhes-descricao').textContent = descricao;
-        painel.querySelector('.detalhes-tags').innerHTML = tags.map(tag => `<span class="detalhe-tag">${tag}</span>`).join('');
-        painel.classList.add('ativo');
+      painel.querySelector('.detalhes-imagem img').src = produto.imagem;
+      painel.querySelector('.detalhes-imagem img').alt = produto.alt;
+      painel.querySelector('.detalhes-nome').textContent = produto.nome;
+      painel.querySelector('.detalhes-tags').innerHTML = produto.categorias.map(cat => `<span class="categoria-tag">${cat}</span>`).join('');
+      painel.querySelector('.detalhes-descricao').textContent = produto.descricao;
+      painel.querySelector('.detalhes-valor').textContent = `R$ ${(detalhePrecoUnitario * detalheQuantidade).toFixed(2).replace('.', ',')}`;
+
+      // Adicionar estrelas ao painel
+      let estrelasHTML_painel = `<div class="stars" style="margin: 10px 0;"><span>${estrelasHTML}</span><span class="stars-count">(${total})</span></div>`;
+      const descricao = painel.querySelector('.detalhes-descricao');
+      const estrelasExistentes = painel.querySelector('.detalhes-descricao').previousElementSibling;
+      if (estrelasExistentes && estrelasExistentes.classList.contains('stars')) {
+        estrelasExistentes.remove();
       }
+      descricao.insertAdjacentHTML('beforebegin', estrelasHTML_painel);
+
+      atualizarDetalhesProduto();
+      painel.classList.add('ativo');
     }
 
     function fecharDetalhesProduto() {
       const painel = document.getElementById('painelDetalhesProduto');
       if (painel) painel.classList.remove('ativo');
-    }
-
-    function reconectarEventosCards() {
-      const cards = document.querySelectorAll('#favoritosGrid .card');
-      cards.forEach(card => {
-        card.addEventListener('click', function(event) {
-          if (event.target.closest('button')) return;
-          mostrarDetalhesProduto(card);
-        });
-        card.querySelectorAll('button').forEach(btn => {
-          btn.addEventListener('click', event => event.stopPropagation());
-        });
-      });
     }
 
     // Função para mostrar notificações
@@ -1549,8 +1782,26 @@
       return respostasPadrao[Math.floor(Math.random() * respostasPadrao.length)];
     }
 
+    function irParaMaisVendidos() {
+      window.location.href = 'index.html';
+    }
+
     // Carregar favoritos quando a página carrega
     document.addEventListener('DOMContentLoaded', renderizarFavoritos);
+
+    // Função para esconder o spinner de carregamento
+    function esconderSpinnerDeCarregamento() {
+      const spinner = document.getElementById('pageLoadSpinner');
+      if (!spinner) return;
+      spinner.classList.add('hidden');
+    }
+
+    // Esconder spinner quando página termina de carregar
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        esconderSpinnerDeCarregamento();
+      }, 2500);
+    });
   </script>
 </body>
 </html>
