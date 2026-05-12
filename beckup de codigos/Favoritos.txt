@@ -1383,11 +1383,11 @@
           id: 14
         },
         {
-          nome: 'Conditioner Hidra Silk Dominiun',
+          nome: '🐍 Hydra Essence Silk Dominiun',
           preco: '239,99',
-          descricao: '💆‍♀️ Condicionador 🧴 com hidratação intensa ✨ e toque sedoso nos fios 💖 Fórmula leve 🌬️ que deixa o cabelo mais macio 🪶 alinhado 🌟 e com brilho radiante como uma Hidra🐉',
-          imagem: './images/Condicionador venda -1.png',
-          alt: 'Conditioner Hidra Silk Dominiun',
+          descricao: '💆‍♀️ Condicionador 🧴 com hidratação intensa ✨ e toque sedoso nos fios 💖 Fórmula leve 🌬️ que deixa o cabelo mais macio 🪶 alinhado 🌟 e com brilho radiante como uma Hidra🐍',
+          imagem: './images/Condicionador Hidra venda.png',
+          alt: '🐍 Hydra Essence Silk Dominiun',
           categorias: ['Cabelos'],
           estrelas: '★★★★★',
           avaliacoes: 145,
